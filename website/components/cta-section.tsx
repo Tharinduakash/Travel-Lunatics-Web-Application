@@ -8,7 +8,7 @@ import Link from 'next/link'
 
 export function CTASection() {
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-emerald-600 via-emerald-500 to-blue-600 dark:from-emerald-900 dark:via-emerald-800 dark:to-blue-900">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-br from-emerald-600 via-emerald-500 to-blue-600 dark:from-emerald-900 dark:via-emerald-800 dark:to-blue-900">
       <div className="mx-auto max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -17,7 +17,7 @@ export function CTASection() {
           className="text-center"
         >
           <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
-            Ready for Your Adventure?
+            Ready for Your Tour ?
           </h2>
           <p className="text-lg text-emerald-50 mb-8">
             Start planning your dream trip to Sri Lanka today and create memories that last a lifetime

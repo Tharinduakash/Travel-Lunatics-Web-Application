@@ -106,7 +106,7 @@ export function DestinationCard({
               {duration_days} days
             </div>
             <div className="text-emerald-600 dark:text-emerald-400 font-bold">
-              From Rs.{price_from.toLocaleString()}
+              From $ {price_from.toLocaleString()}
             </div>
           </div>
         </div>

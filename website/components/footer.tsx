@@ -44,7 +44,7 @@ export function Footer() {
             {/* Brand */}
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-blue-600 text-white font-bold">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-emerald-500 to-blue-600 text-white font-bold">
                   TL
                 </div>
                 <span className="text-xl font-bold text-white">Travel Lunatics</span>
@@ -95,19 +95,19 @@ export function Footer() {
               <h4 className="font-semibold text-white mb-4">Contact Info</h4>
               <ul className="space-y-3">
                 <li className="flex gap-2">
-                  <Mail className="h-5 w-5 flex-shrink-0 text-emerald-400" />
+                  <Mail className="h-5 w-5 shrink-0 text-emerald-400" />
                   <a href="mailto:info@travellunatics.com" className="text-sm hover:text-emerald-400 transition-colors">
                     info@travellunatics.com
                   </a>
                 </li>
                 <li className="flex gap-2">
-                  <Phone className="h-5 w-5 flex-shrink-0 text-emerald-400" />
+                  <Phone className="h-5 w-5 shrink-0 text-emerald-400" />
                   <a href="tel:+94701234567" className="text-sm hover:text-emerald-400 transition-colors">
                     +94 70 123 4567
                   </a>
                 </li>
                 <li className="flex gap-2">
-                  <MapPin className="h-5 w-5 flex-shrink-0 text-emerald-400" />
+                  <MapPin className="h-5 w-5 shrink-0 text-emerald-400" />
                   <span className="text-sm">Colombo, Sri Lanka</span>
                 </li>
               </ul>
@@ -121,7 +121,7 @@ export function Footer() {
                 &copy; {currentYear} Travel Lunatics. All rights reserved.
               </p>
               <p className="text-sm">
-                Made with ❤️ for travel enthusiasts
+                Made with  travel enthusiasts
               </p>
             </div>
           </div>

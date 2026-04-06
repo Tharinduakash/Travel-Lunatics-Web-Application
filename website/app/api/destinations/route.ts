@@ -1,4 +1,6 @@
-import { sql } from '@neondatabase/serverless'
+import { neon } from '@neondatabase/serverless'
+
+const sql = neon(process.env.DATABASE_URL!)
 
 export async function GET() {
   try {
@@ -23,7 +25,7 @@ export async function GET() {
       LIMIT 50
     `
 
-    return Response.json(destinations.rows)
+    return Response.json(destinations)
   } catch (error) {
     console.error('Database error:', error)
     return Response.json({ error: 'Failed to fetch destinations' }, { status: 500 })

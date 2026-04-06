@@ -75,7 +75,7 @@ export default function ContactPage() {
 
       <main className="pt-8">
         {/* Header */}
-        <section className="px-4 sm:px-6 lg:px-8 py-12 bg-gradient-to-b from-gray-50 to-transparent dark:from-gray-900">
+        <section className="px-4 sm:px-6 lg:px-8 py-24 bg-gradient-to-b from-gray-50 to-transparent dark:from-gray-900">
           <div className="mx-auto max-w-4xl text-center">
             <motion.div
               initial={{ opacity: 0, y: -20 }}

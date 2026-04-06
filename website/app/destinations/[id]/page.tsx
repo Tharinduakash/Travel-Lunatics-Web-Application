@@ -94,7 +94,7 @@ export default function DestinationDetailPage() {
             animate={{ scale: 1 }}
             transition={{ duration: 0.6 }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
           
           {/* Back Button */}
           <Link href="/destinations">
@@ -147,7 +147,7 @@ export default function DestinationDetailPage() {
                   </div>
                   <div className="text-center">
                     <p className="text-emerald-600 dark:text-emerald-400 font-bold">
-                      From Rs.{destination.price_from}
+                      From $.{destination.price_from}
                     </p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">per person</p>
                   </div>
@@ -223,7 +223,7 @@ export default function DestinationDetailPage() {
                         Price per person
                       </p>
                       <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
-                        Rs.{destination.price_from}
+                        $.{destination.price_from}
                       </p>
                     </div>
                     <div>

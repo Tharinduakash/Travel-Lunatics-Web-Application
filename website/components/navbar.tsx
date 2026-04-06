@@ -1,13 +1,25 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 import { ThemeToggle } from './theme-toggle'
-import { Button } from '@/components/ui/button'
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [scrollY, setScrollY] = useState(0)
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrollY(window.scrollY)
+      setScrolled(window.scrollY > 30)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const bgOpacity = scrolled ? Math.max(0.55, 1 - scrollY / 400) : 1
 
   const links = [
     { href: '/', label: 'Home' },
@@ -18,65 +30,331 @@ export function Navbar() {
   ]
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur dark:border-gray-800 dark:bg-gray-900/95">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+        .tl-nav {
+          position: fixed;
+          top: 0;
+          z-index: 50;
+          width: 100%;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .tl-overlay {
+          position: absolute;
+          inset: 0;
+          z-index: -3;
+          background: rgba(4, 18, 30, var(--overlay-op, 0));
+          transition: background 0.4s ease;
+        }
+
+        .tl-bg {
+          position: absolute;
+          inset: 0;
+          z-index: -2;
+          background: linear-gradient(
+            100deg,
+            rgba(10, 18, 40,  var(--op, 1)) 0%,
+            rgba(6,  38,  58,  var(--op, 1)) 35%,
+            rgba(4,  72,  80,  var(--op, 1)) 70%,
+            rgba(2,  90,  80,  var(--op, 1)) 100%
+          );
+          transition: all 0.5s ease;
+        }
+
+        .tl-blur {
+          position: absolute;
+          inset: 0;
+          z-index: -1;
+          transition: backdrop-filter 0.4s ease;
+        }
+        .tl-blur.on {
+          backdrop-filter: blur(20px) saturate(160%);
+          -webkit-backdrop-filter: blur(20px) saturate(160%);
+        }
+
+        .tl-line {
+          position: absolute;
+          bottom: 0; left: 0; right: 0;
+          height: 1.5px;
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            #00e5c8 25%,
+            #ff7a45 55%,
+            #00e5c8 80%,
+            transparent 100%
+          );
+          opacity: 0;
+          transition: opacity 0.5s ease;
+        }
+        .tl-line.on { opacity: 0.75; }
+
+        .tl-inner {
+          max-width: 1300px;
+          margin: 0 auto;
+          padding: 0 1.75rem;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          transition: height 0.4s cubic-bezier(.4,0,.2,1);
+        }
+
+        /* Logo */
+        .tl-logo {
+          display: flex;
+          align-items: center;
+          gap: 11px;
+          text-decoration: none;
+          flex-shrink: 0;
+        }
+
+        .tl-logo-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 46px;
+          height: 46px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #10b981, #2563eb);
+          border: 2px solid rgba(0, 229, 200, 0.5);
+          box-shadow: 0 0 12px rgba(0,229,200,0.25);
+          font-weight: 800;
+          font-size: 16px;
+          color: #fff;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          flex-shrink: 0;
+          transition: box-shadow 0.35s ease, border-color 0.35s ease;
+          filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+        }
+        .tl-logo:hover .tl-logo-icon {
+          border-color: rgba(0,229,200,0.95);
+          box-shadow: 0 0 20px rgba(0,229,200,0.5), 0 0 40px rgba(255,122,69,0.2);
+        }
+
+        .tl-logo-main {
+          font-size: 20px;
+          font-weight: 800;
+          letter-spacing: 0.03em;
+          color: #ffffff;
+          text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+          filter: drop-shadow(0 1px 4px rgba(0,0,0,0.7));
+        }
+
+        /* Desktop links */
+        .tl-links {
+          display: none;
+          align-items: center;
+          gap: 0;
+        }
+        @media (min-width: 768px) { .tl-links { display: flex; } }
+
+        .tl-link {
+          position: relative;
+          padding: 9px 15px;
+          font-size: 13.5px;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.92);
+          text-decoration: none;
+          letter-spacing: 0.015em;
+          border-radius: 8px;
+          transition: color 0.2s ease, background 0.2s ease;
+          text-shadow: 0 1px 6px rgba(0,0,0,0.55);
+        }
+        .tl-link::after {
+          content: '';
+          position: absolute;
+          bottom: 5px; left: 15px; right: 15px;
+          height: 2px;
+          border-radius: 2px;
+          background: linear-gradient(90deg, #00e5c8, #ff7a45);
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+        }
+        .tl-link:hover {
+          color: #ffffff;
+          background: rgba(0, 0, 0, 0.18);
+          text-shadow: 0 0 12px rgba(0,229,200,0.5);
+        }
+        .tl-link:hover::after { transform: scaleX(1); }
+
+        /* Right side actions */
+        .tl-actions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        /* Theme toggle wrapper — keeps the icon white/visible */
+        .tl-theme-wrap {
+          color: #fff;
+        }
+        .tl-theme-wrap button {
+          color: #fff !important;
+          border-color: rgba(255,255,255,0.25) !important;
+          background: rgba(0,0,0,0.2) !important;
+        }
+        .tl-theme-wrap button:hover {
+          background: rgba(0,229,200,0.18) !important;
+          border-color: rgba(0,229,200,0.6) !important;
+        }
+
+        /* Hamburger */
+        .tl-burger {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 42px; height: 42px;
+          border-radius: 10px;
+          border: 1px solid rgba(255,255,255,0.25);
+          background: rgba(0, 0, 0, 0.25);
+          color: #ffffff;
+          cursor: pointer;
+          transition: all 0.25s ease;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .tl-burger:hover {
+          background: rgba(0,229,200,0.18);
+          border-color: rgba(0,229,200,0.6);
+        }
+        @media (min-width: 768px) { .tl-burger { display: none; } }
+
+        /* Mobile menu */
+        .tl-mobile {
+          overflow: hidden;
+          max-height: 0;
+          opacity: 0;
+          transition: max-height 0.38s cubic-bezier(.4,0,.2,1), opacity 0.3s ease;
+        }
+        .tl-mobile.open { max-height: 480px; opacity: 1; }
+
+        .tl-mobile-inner {
+          max-width: 1300px;
+          margin: 0 auto;
+          padding: 10px 1.75rem 22px;
+          border-top: 1px solid rgba(255,255,255,0.15);
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          background: rgba(4, 18, 30, 0.35);
+        }
+
+        .tl-mlink {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px 14px;
+          font-size: 15px;
+          font-weight: 600;
+          color: #ffffff;
+          text-decoration: none;
+          border-radius: 10px;
+          text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+          transition: all 0.2s ease;
+        }
+        .tl-mlink:hover {
+          color: #fff;
+          background: rgba(0,0,0,0.2);
+          padding-left: 20px;
+        }
+        .tl-mdot {
+          width: 5px; height: 5px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #00e5c8, #ff7a45);
+          opacity: 0;
+          transition: opacity 0.2s ease;
+          flex-shrink: 0;
+        }
+        .tl-mlink:hover .tl-mdot { opacity: 1; }
+
+        /* Mobile theme toggle row */
+        .tl-mtheme {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px 14px;
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .tl-mtheme button {
+          color: #fff !important;
+          border-color: rgba(255,255,255,0.25) !important;
+          background: rgba(0,0,0,0.2) !important;
+        }
+      `}</style>
+
+      <nav className="tl-nav">
+        {/* Dark overlay */}
+        <div
+          className="tl-overlay"
+          style={{ '--overlay-op': scrolled ? Math.min(0.6, (scrollY - 30) / 250) : 0 } as React.CSSProperties}
+        />
+        {/* Gradient bg */}
+        <div
+          className="tl-bg"
+          style={{ '--op': bgOpacity } as React.CSSProperties}
+        />
+        <div className={`tl-blur ${scrolled ? 'on' : ''}`} />
+        <div className={`tl-line ${scrolled ? 'on' : ''}`} />
+
+        {/* Main row */}
+        <div className="tl-inner" style={{ height: scrolled ? 62 : 72 }}>
+
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-blue-600 text-white font-bold text-lg">
-              TL
-            </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">Travel Lunatics</span>
+          <Link href="/" className="tl-logo">
+            <div className="tl-logo-icon">TL</div>
+            <span className="tl-logo-main">Travel Lunatics</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          {/* Desktop links */}
+          <div className="tl-links">
             {links.map((link) => (
-              <Link key={link.href} href={link.href}>
-                <Button variant="ghost" className="text-gray-700 hover:text-emerald-600 dark:text-gray-300 dark:hover:text-emerald-400">
-                  {link.label}
-                </Button>
+              <Link key={link.href} href={link.href} className="tl-link">
+                {link.label}
               </Link>
             ))}
           </div>
 
-          {/* Theme Toggle & Mobile Menu */}
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            
-            {/* Mobile Menu Button */}
+          {/* Right: ThemeToggle + Burger */}
+          <div className="tl-actions">
+            <div className="tl-theme-wrap">
+              <ThemeToggle />
+            </div>
             <button
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="tl-burger"
               onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
             >
-              {isOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
+              {isOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden border-t border-gray-200 dark:border-gray-800 py-4">
-            <div className="flex flex-col gap-2">
-              {links.map((link) => (
-                <Link key={link.href} href={link.href}>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-gray-700 hover:text-emerald-600 dark:text-gray-300 dark:hover:text-emerald-400"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {link.label}
-                  </Button>
-                </Link>
-              ))}
+        {/* Mobile dropdown */}
+        <div className={`tl-mobile ${isOpen ? 'open' : ''}`}>
+          <div className="tl-mobile-inner">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="tl-mlink"
+                onClick={() => setIsOpen(false)}
+              >
+                {link.label}
+                <span className="tl-mdot" />
+              </Link>
+            ))}
+            <div className="tl-mtheme">
+              <span>Theme</span>
+              <ThemeToggle />
             </div>
           </div>
-        )}
-      </div>
-    </nav>
+        </div>
+      </nav>
+    </>
   )
 }

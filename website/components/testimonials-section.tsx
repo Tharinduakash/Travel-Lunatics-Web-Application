@@ -24,7 +24,8 @@ export function TestimonialsSection() {
       try {
         const response = await fetch('/api/testimonials')
         const data = await response.json()
-        setTestimonials(data)
+        // Guard: ensure data is an array before setting state
+        setTestimonials(Array.isArray(data) ? data : [])
       } catch (error) {
         console.error('Failed to fetch testimonials:', error)
       } finally {
@@ -53,11 +54,12 @@ export function TestimonialsSection() {
     return null
   }
 
+  // Only include valid (defined) testimonials — handles case where length < 3
   const visibleTestimonials = [
     testimonials[current],
     testimonials[(current + 1) % testimonials.length],
     testimonials[(current + 2) % testimonials.length],
-  ]
+  ].filter((t): t is Testimonial => t !== undefined)
 
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
@@ -87,7 +89,8 @@ export function TestimonialsSection() {
           >
             {visibleTestimonials.map((testimonial, idx) => (
               <motion.div
-                key={testimonial.id}
+                // Use index+current as key to avoid collisions when wrapping
+                key={`${testimonial.id}-${idx}`}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
@@ -114,7 +117,7 @@ export function TestimonialsSection() {
 
                 {/* Review */}
                 <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">
-                  "{testimonial.review}"
+                  &ldquo;{testimonial.review}&rdquo;
                 </p>
 
                 {/* Author */}
@@ -140,7 +143,9 @@ export function TestimonialsSection() {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length)}
+              onClick={() =>
+                setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length)
+              }
               className="rounded-full"
             >
               <ChevronLeft className="h-4 w-4" />
