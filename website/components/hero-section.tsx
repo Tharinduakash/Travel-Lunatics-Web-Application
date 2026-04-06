@@ -109,22 +109,39 @@ export function HeroSection() {
         }
 
         /*
-          Full-bleed wrapper — breaks out of ANY parent padding/container.
-          width: 100vw + left: 50% + margin-left: -50vw is the standard
-          CSS full-bleed technique. This guarantees the hero always
-          touches both screen edges regardless of layout padding above.
+          Global: prevent horizontal scroll at the page level.
+          This is the safest place to stop the 100vw trick from
+          ever creating a horizontal scrollbar on any browser.
+          overflow-x: clip is preferred over hidden because it
+          does NOT create a new scroll container (which would break
+          position: sticky elements in the navbar etc).
+        */
+        html, body {
+          overflow-x: clip;
+          max-width: 100%;
+        }
+
+        /*
+          Full-bleed wrapper — breaks out of any parent padding.
+          Uses overflow-x: clip (NOT hidden) so that:
+          - The hero escapes container padding on mobile (no left gap)
+          - No horizontal scrollbar is created on desktop
+          overflow: clip blocks layout overflow without creating a scroll container,
+          which is the key difference vs overflow: hidden.
         */
         .hero-wrapper {
           display: block;
+          /* Stretch to viewport width, escaping parent padding */
           width: 100vw;
           position: relative;
           left: 50%;
           margin-left: -50vw;
-          /* Reset any inherited spacing */
           padding: 0;
           margin-top: 0;
           margin-bottom: 0;
-          overflow: hidden;
+          /* clip — suppresses any overflow WITHOUT adding a scrollbar */
+          overflow-x: clip;
+          overflow-y: visible;
         }
 
         .hero-root {
