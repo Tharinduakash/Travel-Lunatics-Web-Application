@@ -2,6 +2,7 @@ import { Navbar } from '@/components/navbar'
 import { HeroSlideshow } from '@/components/hero-slideshow'
 import { FloatingWidgets } from '@/components/floating-widgets'
 import { FeaturedDestinations } from '@/components/featured-destinations'
+import { HomeAboutSection } from '@/components/home-about-section'
 import { ServicesSection } from '@/components/services-section'
 import { TestimonialsSection } from '@/components/testimonials-section'
 import { CTASection } from '@/components/cta-section'
@@ -25,6 +26,9 @@ export default function Home() {
         <ExperiencesSection/>
 
         <TourPackagesSection />
+
+        {/* About Section */}
+        <HomeAboutSection />
 
         <DestinationsSection />
 
