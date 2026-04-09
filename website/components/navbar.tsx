@@ -2,13 +2,16 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, X } from 'lucide-react'
-import { ThemeToggle } from './theme-toggle'
+import { Menu, X, Search, ChevronDown, Globe } from 'lucide-react'
+import type { SupportedLanguage } from '@/lib/translate'
+import { LANGUAGE_NAMES } from '@/lib/translate'
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [scrollY, setScrollY] = useState(0)
+  const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguage>('en')
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false)
 
   useEffect(() => {
     const onScroll = () => {
@@ -21,12 +24,23 @@ export function Navbar() {
 
   const bgOpacity = scrolled ? Math.max(0.55, 1 - scrollY / 400) : 1
 
+  const languages: { code: SupportedLanguage; name: string }[] = [
+    { code: 'en', name: 'English' },
+    { code: 'es', name: 'Español' },
+    { code: 'fr', name: 'Français' },
+    { code: 'de', name: 'Deutsch' },
+    { code: 'zh', name: '中文' },
+    { code: 'ja', name: '日本語' },
+  ]
+
   const links = [
     { href: '/', label: 'Home' },
-    { href: '/destinations', label: 'Destinations' },
-    { href: '/about', label: 'About Us' },
-    { href: '/travel-buddies', label: 'Travel Buddies' },
-    { href: '/contact', label: 'Contact' },
+    { href: '/destinations', label: 'Destinations', hasDropdown: true },
+    { href: '/tours', label: 'Tours', hasDropdown: true },
+    { href: '/experiences', label: 'Experiences', hasDropdown: true },
+    { href: '/travel-guide', label: 'Travel Guide', hasDropdown: true },
+    { href: '/about', label: 'About Us', hasDropdown: true },
+    { href: '/contact', label: 'Contact', hasDropdown: true },
   ]
 
   return (
@@ -188,18 +202,120 @@ export function Navbar() {
           gap: 10px;
         }
 
-        /* Theme toggle wrapper — keeps the icon white/visible */
-        .tl-theme-wrap {
+        /* Language selector */
+        .language-selector {
+          position: relative;
+        }
+
+        .language-btn {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 14px;
+          border-radius: 8px;
+          border: 1px solid rgba(255,255,255,0.25);
+          background: rgba(0, 0, 0, 0.25);
+          color: #ffffff;
+          cursor: pointer;
+          transition: all 0.25s ease;
+          font-size: 13px;
+          font-weight: 600;
+          text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+        }
+
+        .language-btn:hover {
+          background: rgba(0,229,200,0.18);
+          border-color: rgba(0,229,200,0.6);
+        }
+
+        .language-dropdown {
+          position: absolute;
+          top: calc(100% + 8px);
+          right: 0;
+          background: rgba(10, 18, 40, 0.98);
+          border: 1px solid rgba(0,229,200,0.3);
+          border-radius: 12px;
+          min-width: 180px;
+          overflow: hidden;
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: all 0.3s ease;
+          z-index: 100;
+          backdrop-filter: blur(10px);
+          box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .language-dropdown.open {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        .language-option {
+          display: block;
+          width: 100%;
+          padding: 12px 16px;
+          border: none;
+          background: none;
+          color: #ffffff;
+          text-align: left;
+          font-size: 13px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-family: inherit;
+        }
+
+        .language-option:hover {
+          background: rgba(0,229,200,0.15);
+          padding-left: 20px;
+        }
+
+        .language-option.active {
+          background: rgba(0,229,200,0.25);
+          color: #00e5c8;
+          font-weight: 700;
+        }
+
+        /* Search icon */
+        .search-btn {
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
+          border: none;
+          background: rgba(0,0,0,0.25);
           color: #fff;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.25s ease;
         }
-        .tl-theme-wrap button {
-          color: #fff !important;
-          border-color: rgba(255,255,255,0.25) !important;
-          background: rgba(0,0,0,0.2) !important;
+
+        .search-btn:hover {
+          background: rgba(0,229,200,0.18);
         }
-        .tl-theme-wrap button:hover {
-          background: rgba(0,229,200,0.18) !important;
-          border-color: rgba(0,229,200,0.6) !important;
+
+        /* Inquire button */
+        .inquire-nav-btn {
+          padding: 10px 24px;
+          border-radius: 8px;
+          border: none;
+          background: linear-gradient(135deg, #ff7a45, #ff6b2c);
+          color: white;
+          font-weight: 700;
+          font-size: 13px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+          box-shadow: 0 4px 12px rgba(255,122,69,0.3);
+        }
+
+        .inquire-nav-btn:hover {
+          background: linear-gradient(135deg, #ff6b2c, #ff5213);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(255,122,69,0.4);
         }
 
         /* Hamburger */
@@ -270,8 +386,8 @@ export function Navbar() {
         }
         .tl-mlink:hover .tl-mdot { opacity: 1; }
 
-        /* Mobile theme toggle row */
-        .tl-mtheme {
+        /* Mobile language selector */
+        .tl-mlang {
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -279,11 +395,24 @@ export function Navbar() {
           color: #ffffff;
           font-size: 14px;
           font-weight: 600;
+          border-top: 1px solid rgba(255,255,255,0.1);
+          margin-top: 8px;
         }
-        .tl-mtheme button {
-          color: #fff !important;
-          border-color: rgba(255,255,255,0.25) !important;
-          background: rgba(0,0,0,0.2) !important;
+
+        .tl-mlang-select {
+          padding: 8px 12px;
+          border-radius: 6px;
+          border: 1px solid rgba(255,255,255,0.25);
+          background: rgba(0,0,0,0.2);
+          color: #fff;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        .tl-mlang-select:hover {
+          background: rgba(0,229,200,0.18);
+          border-color: rgba(0,229,200,0.6);
         }
       `}</style>
 
@@ -319,11 +448,54 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Right: ThemeToggle + Burger */}
+          {/* Right: Language Selector + Search + Inquire + Burger */}
           <div className="tl-actions">
-            <div className="tl-theme-wrap">
-              <ThemeToggle />
+            {/* Language Selector */}
+            <div className="language-selector">
+              <button
+                className="language-btn"
+                onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+                aria-label="Select language"
+              >
+                <Globe size={16} />
+                {currentLanguage.toUpperCase()}
+                <ChevronDown size={14} />
+              </button>
+
+              <div
+                className={`language-dropdown ${showLanguageDropdown ? 'open' : ''}`}
+              >
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    className={`language-option ${
+                      currentLanguage === lang.code ? 'active' : ''
+                    }`}
+                    onClick={() => {
+                      setCurrentLanguage(lang.code)
+                      setShowLanguageDropdown(false)
+                    }}
+                  >
+                    {lang.name}
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {/* Search Icon */}
+            <button
+              className="search-btn"
+              aria-label="Search"
+            >
+              <Search size={18} />
+            </button>
+
+            {/* Inquire Button */}
+            <button className="inquire-nav-btn">
+              INQUIRE
+            </button>
+
+            {/* Hamburger */}
             <button
               className="tl-burger"
               onClick={() => setIsOpen(!isOpen)}
@@ -348,9 +520,22 @@ export function Navbar() {
                 <span className="tl-mdot" />
               </Link>
             ))}
-            <div className="tl-mtheme">
-              <span>Theme</span>
-              <ThemeToggle />
+            <div className="tl-mlang">
+              <span>Language</span>
+              <select
+                className="tl-mlang-select"
+                value={currentLanguage}
+                onChange={(e) => {
+                  setCurrentLanguage(e.target.value as SupportedLanguage)
+                  setIsOpen(false)
+                }}
+              >
+                {languages.map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>

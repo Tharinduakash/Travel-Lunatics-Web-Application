@@ -1,5 +1,6 @@
 import { Navbar } from '@/components/navbar'
-import { HeroSection } from '@/components/hero-section'
+import { HeroSlideshow } from '@/components/hero-slideshow'
+import { FloatingWidgets } from '@/components/floating-widgets'
 import { FeaturedDestinations } from '@/components/featured-destinations'
 import { ServicesSection } from '@/components/services-section'
 import { TestimonialsSection } from '@/components/testimonials-section'
@@ -13,7 +14,8 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white dark:bg-gray-950">
       <Navbar />
-      <HeroSection />
+      <HeroSlideshow />
+      <FloatingWidgets />
        
         <FeaturedDestinations />
 
