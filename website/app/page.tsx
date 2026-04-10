@@ -5,7 +5,7 @@ import { FeaturedDestinations } from '@/components/featured-destinations'
 import { HomeAboutSection } from '@/components/home-about-section'
 import { WhyTravelSection } from '@/components/why-travel-section'
 import { ServicesSection } from '@/components/services-section'
-import { TestimonialsSection } from '@/components/testimonials-section'
+import { RealStoriesSection } from '@/components/real-stories-section'
 import { CTASection } from '@/components/cta-section'
 import { Footer } from '@/components/footer'
 import { ExperiencesSection } from '@/components/experiences-section'
@@ -36,10 +36,8 @@ export default function Home() {
 
         <DestinationsSection />
 
-
-
-        {/* Testimonials */}
-        <TestimonialsSection />
+        {/* Real Stories Section */}
+        <RealStoriesSection />
 
         {/* CTA Section */}
         <CTASection />

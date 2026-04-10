@@ -144,13 +144,19 @@ export function DestinationsSection() {
           border-radius: 24px;
           overflow: hidden;
           aspect-ratio: 4/5;
+          box-shadow: 0 12px 48px rgba(0,229,200,0.1), 0 4px 16px rgba(0,0,0,0.3);
+          border: 1px solid rgba(0,229,200,0.1);
         }
 
         .dest-preview-img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.6s ease;
+          transition: transform 0.6s cubic-bezier(.4,0,.2,1);
+        }
+        
+        .dest-preview:hover .dest-preview-img {
+          transform: scale(1.05);
         }
 
         .dest-tag {

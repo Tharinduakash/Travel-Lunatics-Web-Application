@@ -134,11 +134,13 @@ export function TourPackagesSection() {
           border-radius: 20px;
           overflow: hidden;
           border: 1px solid rgba(255,255,255,0.06);
-          transition: transform 0.35s cubic-bezier(.4,0,.2,1), border-color 0.35s;
+          transition: transform 0.35s cubic-bezier(.4,0,.2,1), border-color 0.35s, box-shadow 0.35s ease;
           cursor: pointer;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         }
         .pkg-card:hover {
-          transform: translateY(-6px);
+          transform: translateY(-8px);
+          box-shadow: 0 20px 48px rgba(0,229,200,0.08), 0 8px 32px rgba(0,0,0,0.3);
         }
 
         .pkg-card-img {
@@ -195,8 +197,24 @@ export function TourPackagesSection() {
           cursor: pointer;
           transition: all 0.25s ease;
           text-decoration: none;
+          position: relative;
+          overflow: hidden;
         }
-        .pkg-cta:hover { transform: translateX(4px); gap: 10px; }
+        .pkg-cta::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: rgba(255,255,255,0.05);
+          opacity: 0;
+          transition: opacity 0.25s ease;
+        }
+        .pkg-cta:hover {
+          transform: translateX(4px);
+          gap: 10px;
+        }
+        .pkg-cta:hover::before {
+          opacity: 1;
+        }
       `}</style>
 
       <div className="pkg-section mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
