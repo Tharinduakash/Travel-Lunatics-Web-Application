@@ -178,13 +178,17 @@ export function ExperiencesSection() {
           border-radius: 16px;
           overflow: hidden;
           aspect-ratio: 3/4;
-          transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+          transition: transform 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s ease;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.2);
         }
         /* Full-width banner card override */
         .exp-card.\!aspect-\[21\/7\] {
           aspect-ratio: 21/7 !important;
         }
-        .exp-card:hover { transform: translateY(-8px); }
+        .exp-card:hover {
+          transform: translateY(-10px);
+          box-shadow: 0 16px 40px rgba(0,229,200,0.12), 0 8px 24px rgba(0,0,0,0.3);
+        }
 
         .exp-card-img {
           position: absolute;
