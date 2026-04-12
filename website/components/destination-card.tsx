@@ -2,8 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Star, MapPin, Calendar } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Star, Clock, ArrowUpRight, MapPin } from 'lucide-react'
 import Link from 'next/link'
 
 interface DestinationCardProps {
@@ -19,6 +18,16 @@ interface DestinationCardProps {
   highlights?: string[]
 }
 
+const CAT_COLORS: Record<string, { bg: string; text: string }> = {
+  Beach:      { bg: '#DBEAFE', text: '#1D4ED8' },
+  Historical: { bg: '#FEF3C7', text: '#92400E' },
+  Adventure:  { bg: '#FEE2E2', text: '#B91C1C' },
+  Nature:     { bg: '#D1FAE5', text: '#065F46' },
+  Spiritual:  { bg: '#EDE9FE', text: '#6D28D9' },
+  Cultural:   { bg: '#FED7AA', text: '#C2410C' },
+  Wildlife:   { bg: '#FEF9C3', text: '#713F12' },
+}
+
 export function DestinationCard({
   id,
   name,
@@ -28,94 +37,114 @@ export function DestinationCard({
   price_from,
   duration_days,
   rating,
-  reviews_count,
   highlights = [],
 }: DestinationCardProps) {
+  const cat = CAT_COLORS[category] ?? { bg: '#FED7AA', text: '#C2410C' }
+
   return (
     <motion.div
-      whileHover={{ y: -8 }}
-      className="group overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-300 dark:border-gray-700 dark:bg-gray-900"
+      whileHover={{ y: -6 }}
+      transition={{ duration: 0.25, ease: 'easeOut' }}
+      className="group relative flex-shrink-0 bg-white rounded-2xl overflow-hidden"
+      style={{
+        width: '300px',
+        boxShadow: '0 2px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)',
+        border: '1px solid rgba(0,0,0,0.06)',
+      }}
     >
-      {/* Image */}
-      <div className="relative h-48 w-full overflow-hidden">
-        <motion.img
+      {/* ── Image ── */}
+      <div className="relative overflow-hidden" style={{ height: '220px' }}>
+        <img
           src={image_url}
           alt={name}
-          className="h-full w-full object-cover"
-          whileHover={{ scale: 1.1 }}
-          transition={{ duration: 0.3 }}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <span className="absolute top-3 right-3 bg-emerald-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+
+        {/* Gradient overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.05) 50%, transparent 100%)',
+          }}
+        />
+
+        {/* Category badge — top left */}
+        <span
+          className="absolute top-3 left-3 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full"
+          style={{ background: cat.bg, color: cat.text }}
+        >
           {category}
         </span>
-      </div>
 
-      {/* Content */}
-      <div className="p-5">
-        {/* Title and Rating */}
-        <div className="mb-2">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">
+        {/* Rating pill — top right */}
+        <span
+          className="absolute top-3 right-3 flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full"
+          style={{ background: 'rgba(255,255,255,0.95)', color: '#1f2937' }}
+        >
+          <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+          {Number(rating).toFixed(2)}
+        </span>
+
+        {/* Name + location — bottom of image */}
+        <div className="absolute bottom-0 left-0 right-0 px-4 pb-3">
+          <h3
+            className="text-white font-bold leading-tight mb-1"
+            style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: '1.15rem',
+              textShadow: '0 1px 6px rgba(0,0,0,0.5)',
+            }}
+          >
             {name}
           </h3>
-          <div className="flex items-center gap-2 mt-1">
-            <div className="flex items-center gap-1">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-4 w-4 ${
-                    i < Math.floor(rating)
-                      ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              {rating} ({reviews_count})
-            </span>
-          </div>
+          <span className="flex items-center gap-1 text-white/70 text-[11px] font-medium">
+            <MapPin className="w-3 h-3" />
+            Sri Lanka
+          </span>
         </div>
+      </div>
+
+      {/* ── Body ── */}
+      <div className="px-4 pt-4 pb-4 flex flex-col gap-3">
 
         {/* Description */}
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+        <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">
           {description}
         </p>
 
-        {/* Highlights */}
-        {highlights.length > 0 && (
-          <div className="mb-4">
-            <div className="flex flex-wrap gap-1">
-              {highlights.slice(0, 2).map((highlight, idx) => (
-                <span
-                  key={idx}
-                  className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-1 rounded"
-                >
-                  {highlight}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+        
 
-        {/* Footer Info */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
-          <div className="flex justify-between items-center text-sm mb-3">
-            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-              <Calendar className="h-4 w-4" />
-              {duration_days} days
-            </div>
-            <div className="text-emerald-600 dark:text-emerald-400 font-bold">
-              From $ {price_from.toLocaleString()}
-            </div>
+        {/* Duration + Price */}
+        <div className="flex items-center justify-between pt-1">
+          <div className="flex items-center gap-1.5 text-gray-500">
+            <Clock className="w-3.5 h-3.5" />
+            <span className="text-xs font-medium">
+              {duration_days} {duration_days === 1 ? 'day' : 'days'}
+            </span>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] text-gray-400 leading-none">From</p>
+            <p className="text-base font-black leading-tight" style={{ color: '#F97316' }}>
+              ${price_from.toLocaleString()}.00
+            </p>
           </div>
         </div>
 
-        {/* Button */}
-        <Link href={`/destinations/${id}`}>
-          <Button className="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600">
-            View Details
-          </Button>
+        {/* CTA Button */}
+        <Link href={`/destinations/${id}`} className="block">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-black uppercase tracking-widest text-white transition-all duration-300"
+            style={{
+              background: 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)',
+              boxShadow: '0 4px 14px rgba(249,115,22,0.35)',
+            }}
+          >
+            Explore Now
+            <ArrowUpRight className="w-4 h-4" />
+          </motion.button>
         </Link>
       </div>
     </motion.div>

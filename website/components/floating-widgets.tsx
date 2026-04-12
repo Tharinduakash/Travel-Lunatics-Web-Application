@@ -1,13 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
-import { MessageCircle, HelpCircle } from 'lucide-react'
+import { HelpCircle } from 'lucide-react'
 
 export function FloatingWidgets() {
   const [showInquireModal, setShowInquireModal] = useState(false)
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = '+94XXXXXXXXX' // Replace with actual WhatsApp number
+    const phoneNumber = '+94743582799'
     const message = 'Hi! I would like to inquire about your travel packages.'
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
@@ -64,12 +64,12 @@ export function FloatingWidgets() {
           background: linear-gradient(135deg, #20ba5a, #1aad4a);
         }
 
-        .inquire-btn {
+        .inquire-float-btn {
           background: linear-gradient(135deg, #ff7a45, #ff6b2c);
           color: white;
         }
 
-        .inquire-btn:hover {
+        .inquire-float-btn:hover {
           background: linear-gradient(135deg, #ff6b2c, #ff5213);
         }
 
@@ -78,24 +78,41 @@ export function FloatingWidgets() {
           height: 28px;
         }
 
-        /* Pulse animation */
+        /* Pulse animation on inquire btn */
         @keyframes pulse-ring {
-          0% {
-            box-shadow: 0 0 0 0 rgba(255, 122, 69, 0.7);
-          }
-          70% {
-            box-shadow: 0 0 0 10px rgba(255, 122, 69, 0);
-          }
-          100% {
-            box-shadow: 0 0 0 0 rgba(255, 122, 69, 0);
-          }
+          0%   { box-shadow: 0 0 0 0   rgba(255, 122, 69, 0.7); }
+          70%  { box-shadow: 0 0 0 10px rgba(255, 122, 69, 0);   }
+          100% { box-shadow: 0 0 0 0   rgba(255, 122, 69, 0);   }
         }
-
-        .inquire-btn.pulse {
+        .inquire-float-btn.pulse {
           animation: pulse-ring 2s infinite;
         }
 
-        /* Modal */
+        /* ── Hide the orange inquire FAB on mobile only ──
+           WhatsApp (green) stays visible on all screen sizes */
+        @media (max-width: 767px) {
+          .inquire-float-btn {
+            display: none !important;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .floating-widgets {
+            bottom: 20px;
+            right: 20px;
+            gap: 12px;
+          }
+          .floating-btn {
+            width: 56px;
+            height: 56px;
+          }
+          .floating-btn svg {
+            width: 24px;
+            height: 24px;
+          }
+        }
+
+        /* ── Inquiry Modal ── */
         .inquire-modal-overlay {
           position: fixed;
           inset: 0;
@@ -107,6 +124,7 @@ export function FloatingWidgets() {
           opacity: 0;
           pointer-events: none;
           transition: opacity 0.3s ease;
+          padding: 1rem;
         }
 
         .inquire-modal-overlay.open {
@@ -119,10 +137,11 @@ export function FloatingWidgets() {
           border-radius: 16px;
           padding: 32px;
           max-width: 500px;
-          width: 90%;
+          width: 100%;
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
           transform: scale(0.95);
           transition: transform 0.3s ease;
+          position: relative;
         }
 
         .inquire-modal-overlay.open .inquire-modal {
@@ -130,23 +149,23 @@ export function FloatingWidgets() {
         }
 
         .inquire-modal h2 {
-          font-size: 24px;
+          font-size: 22px;
           font-weight: 700;
           color: #1a1a1a;
-          margin-bottom: 16px;
+          margin-bottom: 12px;
         }
 
         .inquire-modal p {
           font-size: 14px;
           color: #666;
-          margin-bottom: 24px;
+          margin-bottom: 20px;
           line-height: 1.6;
         }
 
         .inquire-form {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 14px;
         }
 
         .inquire-form input,
@@ -157,6 +176,7 @@ export function FloatingWidgets() {
           font-size: 14px;
           font-family: inherit;
           transition: border-color 0.2s ease;
+          width: 100%;
         }
 
         .inquire-form input:focus,
@@ -168,7 +188,7 @@ export function FloatingWidgets() {
 
         .inquire-form textarea {
           resize: vertical;
-          min-height: 120px;
+          min-height: 110px;
         }
 
         .inquire-btn-submit {
@@ -181,6 +201,7 @@ export function FloatingWidgets() {
           font-size: 14px;
           cursor: pointer;
           transition: all 0.3s ease;
+          width: 100%;
         }
 
         .inquire-btn-submit:hover {
@@ -189,117 +210,71 @@ export function FloatingWidgets() {
           box-shadow: 0 4px 12px rgba(255, 122, 69, 0.3);
         }
 
-        .close-btn {
+        .modal-close-btn {
           position: absolute;
-          top: 16px;
-          right: 16px;
-          background: none;
+          top: 14px;
+          right: 14px;
+          background: rgba(0,0,0,0.06);
           border: none;
-          font-size: 24px;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          font-size: 18px;
           cursor: pointer;
-          color: #666;
-          transition: color 0.2s ease;
+          color: #555;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.2s ease, color 0.2s ease;
+          line-height: 1;
         }
 
-        .close-btn:hover {
+        .modal-close-btn:hover {
+          background: rgba(0,0,0,0.12);
           color: #1a1a1a;
-        }
-
-        @media (max-width: 768px) {
-          .floating-widgets {
-            bottom: 20px;
-            right: 20px;
-            gap: 12px;
-          }
-
-          .floating-btn {
-            width: 56px;
-            height: 56px;
-          }
-
-          .floating-btn svg {
-            width: 24px;
-            height: 24px;
-          }
         }
       `}</style>
 
+      {/* ── Floating buttons ── */}
       <div className="floating-widgets">
-        <button
-          className="floating-btn whatsapp-btn"
-          onClick={handleWhatsAppClick}
-          title="Chat on WhatsApp"
-          aria-label="Open WhatsApp chat"
-        >
-          <MessageCircle />
+
+        {/* WhatsApp — always visible */}
+        <button className="floating-btn whatsapp-btn" onClick={handleWhatsAppClick} aria-label="Chat on WhatsApp">
+          <svg viewBox="0 0 32 32" fill="white">
+            <path d="M16.001 3.2c-7.067 0-12.8 5.733-12.8 12.8 0 2.255.588 4.47 1.706 6.427L3.2 28.8l6.573-1.673a12.75 12.75 0 006.228 1.673c7.067 0 12.8-5.733 12.8-12.8S23.068 3.2 16.001 3.2zm0 23.04c-2.06 0-4.08-.552-5.85-1.6l-.42-.248-3.904.992 1.04-3.808-.272-.44a10.24 10.24 0 1110.406 5.104zm5.76-7.36c-.32-.16-1.888-.928-2.176-1.04-.288-.112-.496-.16-.704.16-.208.32-.8 1.04-.984 1.248-.184.208-.368.232-.688.08-.32-.16-1.352-.496-2.576-1.584-.952-.848-1.6-1.888-1.784-2.208-.184-.32-.02-.496.14-.656.144-.144.32-.368.48-.552.16-.184.208-.32.32-.528.112-.208.056-.392-.028-.552-.08-.16-.704-1.696-.96-2.32-.248-.6-.5-.52-.704-.528l-.6-.008c-.208 0-.552.08-.84.392-.288.32-1.104 1.08-1.104 2.64 0 1.56 1.128 3.064 1.288 3.272.16.208 2.224 3.392 5.392 4.752.752.328 1.336.52 1.792.664.752.24 1.44.208 1.984.128.608-.088 1.888-.768 2.152-1.512.264-.744.264-1.384.184-1.512-.08-.128-.288-.208-.608-.368z"/>
+          </svg>
         </button>
 
+        {/* Inquire — hidden on mobile via CSS, visible on tablet/desktop */}
         <button
-          className={`floating-btn inquire-btn ${!showInquireModal ? 'pulse' : ''}`}
+          className={`floating-btn inquire-float-btn ${!showInquireModal ? 'pulse' : ''}`}
           onClick={handleInquireClick}
-          title="Send Inquiry"
           aria-label="Open inquiry form"
         >
           <HelpCircle />
         </button>
       </div>
 
-      {/* Inquiry Modal */}
-      <div className={`inquire-modal-overlay ${showInquireModal ? 'open' : ''}`}>
+      {/* ── Inquiry Modal ── */}
+      <div
+        className={`inquire-modal-overlay ${showInquireModal ? 'open' : ''}`}
+        onClick={(e) => { if (e.target === e.currentTarget) handleInquireClick() }}
+      >
         <div className="inquire-modal">
-          <button
-            className="close-btn"
-            onClick={handleInquireClick}
-            aria-label="Close modal"
-          >
-            ✕
-          </button>
+          <button className="modal-close-btn" onClick={handleInquireClick} aria-label="Close modal">✕</button>
 
           <h2>Send Your Inquiry</h2>
-          <p>
-            We&apos;d love to hear from you! Fill out the form below and
-            we&apos;ll get back to you shortly.
-          </p>
+          <p>We&apos;d love to hear from you! Fill out the form below and we&apos;ll get back to you shortly.</p>
 
-          <form className="inquire-form">
-            <input
-              type="text"
-              placeholder="Your Name"
-              required
-              aria-label="Name"
-            />
-            <input
-              type="email"
-              placeholder="Your Email"
-              required
-              aria-label="Email"
-            />
-            <input
-              type="text"
-              placeholder="Subject"
-              required
-              aria-label="Subject"
-            />
-            <textarea
-              placeholder="Tell us about your travel plans..."
-              required
-              aria-label="Message"
-            ></textarea>
-
-            <button type="submit" className="inquire-btn-submit">
-              Send Inquiry
-            </button>
+          <form className="inquire-form" onSubmit={(e) => e.preventDefault()}>
+            <input type="text"  placeholder="Your Name"    required aria-label="Name" />
+            <input type="email" placeholder="Your Email"   required aria-label="Email" />
+            <input type="text"  placeholder="Subject"      required aria-label="Subject" />
+            <textarea placeholder="Tell us about your travel plans..." required aria-label="Message" />
+            <button type="submit" className="inquire-btn-submit">Send Inquiry</button>
           </form>
         </div>
       </div>
-
-      {showInquireModal && (
-        <div
-          className="inquire-modal-overlay open"
-          onClick={handleInquireClick}
-          role="presentation"
-        />
-      )}
     </>
   )
 }

@@ -1,8 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
-import Image from 'next/image'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 
 interface Slide {
   id: number
@@ -19,402 +17,401 @@ const slides: Slide[] = [
   {
     id: 1,
     title: 'Discover Sri Lanka',
-    subtitle: 'The Pearl of the Indian Ocean',
-    description: 'Experience the breathtaking beauty of Sri Lanka with our expertly curated travel experiences.',
-    image: 'https://images.unsplash.com/photo-1561862260-11b8c3665604?w=1200&h=600&fit=crop',
-    buttonText: 'Explore Destinations',
-    buttonLink: '/destinations',
-    gradient: 'from-blue-900/50 to-blue-600/50',
+    subtitle: 'Iconic Round Tours & Timeless Journeys',
+    description: 'From Sigiriya to Ella and golden beaches, explore the island\'s most breathtaking destinations in one unforgettable journey.',
+    image: '/webp/pexels-eslames1-32414014.webp',
+    buttonText: 'View Packages',
+    buttonLink: '/tours',
+    gradient: 'from-black/70 via-black/40 to-transparent',
   },
   {
     id: 2,
-    title: 'Adventure Awaits',
-    subtitle: 'Thrilling Experiences',
-    description: 'From hiking Pidurangala Rock to surfing in Arugambe, find your next adventure.',
-    image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&h=600&fit=crop',
-    buttonText: 'Browse Tours',
-    buttonLink: '/tours',
-    gradient: 'from-orange-900/50 to-red-600/50',
+    title: 'Spice Trails of Sri Lanka',
+    subtitle: 'Taste the Island, Bite by Bite',
+    description: 'Dive into rich flavors, vibrant markets, and authentic village cooking experiences across the island.',
+    image: '/webp/BANNER.webp',
+    buttonText: 'Explore Food Tours',
+    buttonLink: '/experiences',
+    gradient: 'from-orange-900/70 via-red-700/40 to-transparent',
   },
   {
     id: 3,
-    title: 'Cultural Immersion',
-    subtitle: 'Explore Heritage & Traditions',
-    description: 'Visit ancient temples, colonial architecture, and vibrant local communities.',
-    image: 'https://images.unsplash.com/photo-1548013146-72f92cb33daa?w=1200&h=600&fit=crop',
-    buttonText: 'View Experiences',
+    title: 'Into the Wild',
+    subtitle: 'Untamed Safari Adventures',
+    description: 'Witness elephants, leopards, and whales in their natural habitats with thrilling wildlife safaris.',
+    image: '/webp/shutterstock_495542851.webp',
+    buttonText: 'Explore Wildlife Tours',
     buttonLink: '/experiences',
-    gradient: 'from-amber-900/50 to-yellow-600/50',
+    gradient: 'from-green-900/70 via-emerald-700/40 to-transparent',
   },
   {
     id: 4,
-    title: 'Pristine Beaches',
-    subtitle: 'Tropical Paradise',
-    description: 'Relax on golden shores, swim in crystal-clear waters, and watch stunning sunsets.',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=600&fit=crop',
-    buttonText: 'See Beaches',
-    buttonLink: '/destinations',
-    gradient: 'from-cyan-900/50 to-blue-600/50',
+    title: 'Echoes of the Past',
+    subtitle: 'Living Heritage & Ancient Kingdoms',
+    description: 'Step into centuries of history with ancient cities, sacred temples, and cultural wonders.',
+    image: '/webp/Dambulla Temple 01.webp',
+    buttonText: 'Explore Heritage Tours',
+    buttonLink: '/tours',
+    gradient: 'from-amber-900/70 via-yellow-700/40 to-transparent',
   },
   {
     id: 5,
-    title: 'Wildlife Safari',
-    subtitle: 'Nature\'s Majesty',
-    description: 'Encounter leopards, elephants, and exotic birds in their natural habitat.',
-    image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1200&h=600&fit=crop',
-    buttonText: 'Discover Wildlife',
+    title: 'Sacred Sri Lanka',
+    subtitle: 'A Journey Through Spiritual Awakening',
+    description: 'Experience deep spirituality through sacred mountains, rituals, and timeless traditions.',
+    image: '/webp/sigiriya.webp',
+    buttonText: 'Explore Pilgrimage Tours',
+    buttonLink: '/tours',
+    gradient: 'from-purple-900/70 via-indigo-700/40 to-transparent',
+  },
+  {
+    id: 6,
+    title: 'Sun, Sand & Serenity',
+    subtitle: 'Ultimate Beach Escapes',
+    description: 'Relax under swaying palms, swim in turquoise waters, and enjoy peaceful coastal moments.',
+    image: '/webp/pexels-tomas-malik-793526-1998439.webp',
+    buttonText: 'Explore Beach Tours',
+    buttonLink: '/destinations',
+    gradient: 'from-cyan-900/70 via-blue-700/40 to-transparent',
+  },
+  {
+    id: 7,
+    title: 'Live Like a Local',
+    subtitle: 'Authentic Village & Cultural Experiences',
+    description: 'Connect with local communities, enjoy traditional cooking, and explore real Sri Lankan village life.',
+    image: '/webp/shutterstock_1050911312.webp',
+    buttonText: 'Explore Local Experiences',
     buttonLink: '/experiences',
-    gradient: 'from-green-900/50 to-emerald-600/50',
+    gradient: 'from-stone-900/70 via-yellow-800/40 to-transparent',
   },
 ]
 
+const SLIDE_DURATION = 6000
+const TRANSITION_MS  = 1200
+const TOTAL          = slides.length
+
 export function HeroSlideshow() {
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [isAutoPlay, setIsAutoPlay] = useState(true)
-  const autoPlayTimer = useRef<NodeJS.Timeout | null>(null)
+  const [current, setCurrent]           = useState(0)
+  const [prev, setPrev]                 = useState<number | null>(null)
+  const [transitioning, setTransitioning] = useState(false)
+  const timerRef      = useRef<NodeJS.Timeout | null>(null)
+  const transRef      = useRef<NodeJS.Timeout | null>(null)
+  const transitioningRef = useRef(false)   // always-fresh ref — avoids stale closure
 
-  // Auto-play functionality
+  // ── Core transition function ──────────────────────────────────
+  // Uses a ref for the "transitioning" guard so the interval callback
+  // never reads stale closure state.
+  const advance = useCallback((fromIndex: number) => {
+    if (transitioningRef.current) return
+    const toIndex = (fromIndex + 1) % TOTAL
+    transitioningRef.current = true
+    setTransitioning(true)
+    setPrev(fromIndex)
+    setCurrent(toIndex)
+    if (transRef.current) clearTimeout(transRef.current)
+    transRef.current = setTimeout(() => {
+      setPrev(null)
+      setTransitioning(false)
+      transitioningRef.current = false
+    }, TRANSITION_MS)
+    return toIndex
+  }, [])
+
+  // ── Auto-play — restarts when `current` changes ───────────────
   useEffect(() => {
-    if (!isAutoPlay) return
-
-    autoPlayTimer.current = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length)
-    }, 6000)
-
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => {
+      // Read current via a functional setCurrent so we always have the latest value
+      setCurrent((c) => {
+        advance(c)
+        return c  // advance() calls setCurrent internally; return c to avoid double-update
+      })
+    }, SLIDE_DURATION)
     return () => {
-      if (autoPlayTimer.current) clearInterval(autoPlayTimer.current)
+      if (timerRef.current) clearInterval(timerRef.current)
     }
-  }, [isAutoPlay])
+  }, [advance])
 
-  const handlePrevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
-    setIsAutoPlay(false)
-    // Resume auto-play after 5 seconds of manual interaction
-    setTimeout(() => setIsAutoPlay(true), 5000)
-  }
+  // ── Manual dot click ──────────────────────────────────────────
+  const goTo = useCallback((index: number) => {
+    if (transitioningRef.current) return
+    setCurrent((c) => {
+      if (index === c) return c
+      transitioningRef.current = true
+      setTransitioning(true)
+      setPrev(c)
+      if (transRef.current) clearTimeout(transRef.current)
+      transRef.current = setTimeout(() => {
+        setPrev(null)
+        setTransitioning(false)
+        transitioningRef.current = false
+      }, TRANSITION_MS)
+      return index
+    })
+    // Restart auto-play timer from this point
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => {
+      setCurrent((c) => {
+        advance(c)
+        return c
+      })
+    }, SLIDE_DURATION)
+  }, [advance])
 
-  const handleNextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length)
-    setIsAutoPlay(false)
-    // Resume auto-play after 5 seconds of manual interaction
-    setTimeout(() => setIsAutoPlay(true), 5000)
-  }
+  // ── Cleanup on unmount ────────────────────────────────────────
+  useEffect(() => {
+    return () => {
+      if (timerRef.current)  clearInterval(timerRef.current)
+      if (transRef.current)  clearTimeout(transRef.current)
+    }
+  }, [])
 
-  const handleDotClick = (index: number) => {
-    setCurrentSlide(index)
-    setIsAutoPlay(false)
-    setTimeout(() => setIsAutoPlay(true), 5000)
-  }
-
-  const slide = slides[currentSlide]
+  const slideNum = (n: number) => String(n).padStart(2, '0')
 
   return (
     <>
       <style>{`
-        .hero-slideshow {
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+        .hero-wrap {
           position: relative;
           width: 100%;
-          height: 600px;
+          height: 100vh;
+          min-height: 500px;
           overflow: hidden;
-          margin-top: 72px;
         }
 
-        @media (max-width: 768px) {
-          .hero-slideshow {
-            height: 400px;
-            margin-top: 62px;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .hero-slideshow {
-            height: 300px;
-          }
-        }
-
-        .slide-container {
-          position: relative;
-          width: 100%;
-          height: 100%;
-        }
-
-        .slide-image {
+        /* ── SLIDE LAYERS ───────────────── */
+        .hero-slide {
           position: absolute;
           inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
+          width: 100%; height: 100%;
         }
-
-        .slide-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            135deg,
-            var(--gradient) 0%,
-            rgba(0, 0, 0, 0.3) 100%
-          );
+        .hero-slide.leaving {
+          z-index: 1;
+          animation: heroFadeOut ${TRANSITION_MS}ms ease forwards;
+        }
+        .hero-slide.entering {
           z-index: 2;
+          animation: heroFadeIn ${TRANSITION_MS}ms ease forwards;
+        }
+        .hero-slide.idle { z-index: 2; }
+
+        @keyframes heroFadeIn {
+          from { opacity: 0; transform: scale(1.045); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+        @keyframes heroFadeOut {
+          from { opacity: 1; transform: scale(1); }
+          to   { opacity: 0; transform: scale(0.97); }
         }
 
-        .slide-content {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: flex-start;
-          padding: 60px 80px;
-          z-index: 3;
-          color: white;
-          max-width: 600px;
+        /* ── IMAGE & OVERLAY ────────────── */
+        .hero-img {
+          position: absolute; inset: 0;
+          width: 100%; height: 100%;
+          object-fit: cover; object-position: center;
+        }
+        .hero-overlay {
+          position: absolute; inset: 0; z-index: 1;
+          background: linear-gradient(
+            180deg,
+            rgba(4,10,22,0.58) 0%,
+            rgba(4,10,22,0.18) 35%,
+            rgba(4,10,22,0.12) 55%,
+            rgba(4,10,22,0.68) 100%
+          );
         }
 
+        /* ── CONTENT ────────────────────── */
+        .hero-content {
+          position: absolute; inset: 0; z-index: 3;
+          display: flex; flex-direction: column;
+          justify-content: center; align-items: flex-start;
+          padding: 0 6vw;
+          padding-top: 6vh;
+        }
+        .hero-entering .hero-content {
+          animation: contentIn 1.4s cubic-bezier(.4,0,.2,1) forwards;
+        }
+        @keyframes contentIn {
+          from { opacity: 0; transform: translateY(30px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-eyebrow {
+          font-family: 'DM Sans', sans-serif;
+          font-size: clamp(10px, 1.1vw, 12px);
+          font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase;
+          color: #c6a25c; margin-bottom: 14px;
+          text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+        }
+        .hero-title {
+          font-family: 'Playfair Display', serif;
+          font-style: italic; font-weight: 700;
+          font-size: clamp(36px, 5.8vw, 76px);
+          color: #fff; line-height: 1.08; letter-spacing: -0.01em;
+          margin-bottom: 18px; max-width: 700px;
+          text-shadow: 0 4px 28px rgba(0,0,0,0.55);
+        }
+        .hero-desc {
+          font-family: 'DM Sans', sans-serif;
+          font-size: clamp(13px, 1.35vw, 16px);
+          font-weight: 300; line-height: 1.75;
+          color: rgba(255,255,255,0.76); max-width: 460px;
+          margin-bottom: 34px;
+          text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .hero-cta {
+          display: inline-flex; align-items: center; gap: 10px;
+          padding: 13px 30px; border: 1px solid rgba(198,162,92,0.8);
+          border-radius: 2px; background: transparent; color: #c6a25c;
+          font-family: 'DM Sans', sans-serif; font-size: 10px;
+          font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+          text-decoration: none; cursor: pointer;
+          position: relative; overflow: hidden; transition: color 0.35s ease;
+        }
+        .hero-cta::before {
+          content: ''; position: absolute; inset: 0;
+          background: #c6a25c; transform: translateX(-102%);
+          transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+        }
+        .hero-cta:hover { color: #0a0f1a; }
+        .hero-cta:hover::before { transform: translateX(0); }
+        .hero-cta span { position: relative; z-index: 1; }
+
+        /* ── BOTTOM HUD ─────────────────── */
+        .hero-hud {
+          position: absolute; bottom: 0; left: 0; right: 0;
+          z-index: 10;
+          display: flex; align-items: flex-end; justify-content: space-between;
+          padding: 0 6vw 32px;
+        }
+
+        /* Slide counter */
+        .hero-count {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 11px; font-weight: 600;
+          letter-spacing: 0.12em; color: rgba(255,255,255,0.4);
+          line-height: 1;
+        }
+        .hero-count strong {
+          display: block;
+          color: #c6a25c; font-size: 22px; font-weight: 700;
+          font-family: 'Playfair Display', serif; font-style: italic;
+          line-height: 1; margin-bottom: 2px;
+        }
+
+        /* Dot indicators — centered */
+        .hero-dots {
+          position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+          display: flex; align-items: center; gap: 8px;
+        }
+        .hero-dot {
+          height: 2px; border-radius: 2px;
+          background: rgba(255,255,255,0.3);
+          border: none; cursor: pointer; padding: 0;
+          transition: width 0.4s cubic-bezier(.4,0,.2,1), background 0.4s ease;
+          width: 20px;
+        }
+        .hero-dot.active { width: 44px; background: #c6a25c; }
+        .hero-dot:hover:not(.active) { background: rgba(255,255,255,0.6); }
+
+        /* Scroll hint */
+        .hero-scroll {
+          display: flex; flex-direction: column; align-items: center; gap: 8px;
+          opacity: 0.5;
+        }
+        .hero-scroll-text {
+          font-family: 'DM Sans', sans-serif; font-size: 9px;
+          font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+          color: rgba(255,255,255,0.7); writing-mode: vertical-rl;
+        }
+        .hero-scroll-line {
+          width: 1px; height: 38px;
+          background: linear-gradient(180deg, rgba(198,162,92,0.9), transparent);
+          animation: scrollPulse 2s ease-in-out infinite;
+        }
+        @keyframes scrollPulse {
+          0%,100% { opacity:0.35; transform:scaleY(1); }
+          50%      { opacity:1;    transform:scaleY(0.5); }
+        }
+
+        /* Progress bar */
+        .hero-progress {
+          position: absolute; bottom: 0; left: 0; height: 2px;
+          background: #c6a25c; z-index: 11;
+          animation: progressFill ${SLIDE_DURATION}ms linear forwards;
+        }
+        @keyframes progressFill {
+          from { width: 0%; }
+          to   { width: 100%; }
+        }
+
+        /* ── MOBILE ─────────────────────── */
         @media (max-width: 768px) {
-          .slide-content {
-            padding: 40px 40px;
-            max-width: none;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .slide-content {
-            padding: 30px 20px;
-          }
-        }
-
-        .slide-content h1 {
-          font-size: 56px;
-          font-weight: 800;
-          margin-bottom: 12px;
-          line-height: 1.2;
-          text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        }
-
-        @media (max-width: 768px) {
-          .slide-content h1 {
-            font-size: 40px;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .slide-content h1 {
-            font-size: 28px;
-          }
-        }
-
-        .slide-content h2 {
-          font-size: 20px;
-          font-weight: 600;
-          margin-bottom: 16px;
-          opacity: 0.95;
-          text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        @media (max-width: 768px) {
-          .slide-content h2 {
-            font-size: 16px;
-            margin-bottom: 12px;
-          }
-        }
-
-        .slide-content p {
-          font-size: 16px;
-          margin-bottom: 32px;
-          line-height: 1.6;
-          max-width: 500px;
-          opacity: 0.9;
-          text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        @media (max-width: 768px) {
-          .slide-content p {
-            font-size: 14px;
-            margin-bottom: 24px;
-          }
-        }
-
-        .slide-button {
-          padding: 14px 36px;
-          font-size: 15px;
-          font-weight: 700;
-          background: linear-gradient(135deg, #ff7a45, #ff6b2c);
-          color: white;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          text-decoration: none;
-          display: inline-block;
-          box-shadow: 0 8px 24px rgba(255, 122, 69, 0.3);
-          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .slide-button:hover {
-          background: linear-gradient(135deg, #ff6b2c, #ff5213);
-          transform: translateY(-2px);
-          box-shadow: 0 12px 32px rgba(255, 122, 69, 0.4);
-        }
-
-        .slide-button:active {
-          transform: translateY(0);
-        }
-
-        /* Navigation Controls */
-        .nav-buttons {
-          position: absolute;
-          bottom: 30px;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 5;
-          display: flex;
-          gap: 16px;
-        }
-
-        @media (max-width: 768px) {
-          .nav-buttons {
-            bottom: 20px;
-            gap: 12px;
-          }
-        }
-
-        .nav-button {
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          border: 2px solid rgba(255, 255, 255, 0.5);
-          background: rgba(0, 0, 0, 0.3);
-          color: white;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s ease;
-          backdrop-filter: blur(10px);
-        }
-
-        @media (max-width: 768px) {
-          .nav-button {
-            width: 44px;
-            height: 44px;
-          }
-        }
-
-        .nav-button:hover {
-          background: rgba(255, 122, 69, 0.5);
-          border-color: rgba(255, 255, 255, 0.8);
-          transform: scale(1.1);
-        }
-
-        .nav-button:active {
-          transform: scale(0.95);
-        }
-
-        /* Slide Indicators */
-        .slide-indicators {
-          position: absolute;
-          bottom: 30px;
-          right: 30px;
-          z-index: 5;
-          display: flex;
-          gap: 8px;
-        }
-
-        @media (max-width: 768px) {
-          .slide-indicators {
-            bottom: 20px;
-            right: 20px;
-            gap: 6px;
-          }
-        }
-
-        .indicator {
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.4);
-          border: 2px solid rgba(255, 255, 255, 0.6);
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .indicator.active {
-          background: linear-gradient(135deg, #ff7a45, #ff6b2c);
-          border-color: #ffffff;
-          width: 32px;
-          border-radius: 6px;
-        }
-
-        .indicator:hover {
-          background: rgba(255, 255, 255, 0.7);
-        }
-
-        /* Fade animations */
-        .slide-fade-enter {
-          animation: fadeIn 0.8s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          .hero-scroll { display: none; }
+          .hero-hud { padding-bottom: 28px; }
+          .hero-dots { bottom: 26px; }
         }
       `}</style>
 
-      <div className="hero-slideshow">
-        <div className="slide-container" key={slide.id}>
-          <img
-            src={slide.image}
-            alt={slide.title}
-            className="slide-image"
-          />
-          <div
-            className="slide-overlay"
-            style={{ '--gradient': slide.gradient } as React.CSSProperties}
-          />
+      <div className="hero-wrap">
 
-          <div className="slide-content slide-fade-enter">
-            <h2>{slide.subtitle}</h2>
-            <h1>{slide.title}</h1>
-            <p>{slide.description}</p>
-            <a href={slide.buttonLink} className="slide-button">
-              {slide.buttonText}
+        {/* Outgoing slide */}
+        {prev !== null && (
+          <div className="hero-slide leaving" key={`prev-${prev}`}>
+            <img src={slides[prev].image} alt={slides[prev].title} className="hero-img" />
+            <div className="hero-overlay" />
+          </div>
+        )}
+
+        {/* Active slide */}
+        <div
+          className={`hero-slide ${transitioning ? 'entering hero-entering' : 'idle'}`}
+          key={`curr-${current}`}
+        >
+          <img src={slides[current].image} alt={slides[current].title} className="hero-img" />
+          <div className="hero-overlay" />
+          <div className="hero-content">
+            <p className="hero-eyebrow">{slides[current].subtitle}</p>
+            <h1 className="hero-title">{slides[current].title}</h1>
+            <p className="hero-desc">{slides[current].description}</p>
+            <a href={slides[current].buttonLink} className="hero-cta">
+              <span>{slides[current].buttonText}</span>
             </a>
           </div>
         </div>
 
-        {/* Navigation Arrows */}
-        <div className="nav-buttons">
-          <button
-            className="nav-button"
-            onClick={handlePrevSlide}
-            aria-label="Previous slide"
-          >
-            <ChevronLeft size={24} />
-          </button>
-          <button
-            className="nav-button"
-            onClick={handleNextSlide}
-            aria-label="Next slide"
-          >
-            <ChevronRight size={24} />
-          </button>
+        {/* Bottom HUD */}
+        <div className="hero-hud">
+          {/* Slide counter */}
+          <div className="hero-count">
+            <strong>{slideNum(current + 1)}</strong>
+            / {slideNum(TOTAL)}
+          </div>
+
+          {/* Dots — absolutely centered */}
+          <div className="hero-dots">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                className={`hero-dot ${i === current ? 'active' : ''}`}
+                onClick={() => goTo(i)}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+
+          {/* Scroll hint */}
+          <div className="hero-scroll">
+            <span className="hero-scroll-text">Scroll</span>
+            <div className="hero-scroll-line" />
+          </div>
         </div>
 
-        {/* Slide Indicators */}
-        <div className="slide-indicators">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              className={`indicator ${index === currentSlide ? 'active' : ''}`}
-              onClick={() => handleDotClick(index)}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
+        {/* Progress bar — key forces re-animation on each slide */}
+        <div className="hero-progress" key={`prog-${current}`} />
       </div>
     </>
   )
