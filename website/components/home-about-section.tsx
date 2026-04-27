@@ -130,70 +130,19 @@ export function HomeAboutSection() {
               fontSize: 'clamp(1.9rem, 5vw, 3.75rem)',
             }}
           >
-            Sri Lanka&apos;s Leading
+            Travel Lunatics 
             <br />
             <span style={{
               background: 'linear-gradient(90deg, #F97316 0%, #EA580C 100%)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }}>
-              Destination Management
+              is More than Just a Destination Company
             </span>
           </h2>
         </motion.div>
 
         {/* ── Mobile/Tablet: Stacked images above text card ── */}
-        <div className="lg:hidden mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            {/* Two images side by side */}
-            <div className="grid grid-cols-2 gap-3 mb-3">
-              {/* Sigiriya image */}
-              <div className="relative overflow-hidden" style={{ borderRadius: '1.25rem', aspectRatio: '3/4' }}>
-                <img
-                  src="/webp/sigiriya.webp"
-                  alt="Sigiriya Rock Fortress, Sri Lanka"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div
-                  className="absolute bottom-0 left-0 right-0 px-3 py-3"
-                  style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}
-                >
-                  <p className="text-white/70 text-[9px] font-medium uppercase tracking-wide mb-0.5">Cultural Heritage</p>
-                  <p className="text-white text-[11px] font-bold leading-tight">Sigiriya Rock Fortress</p>
-                </div>
-              </div>
-
-              {/* Mirissa image */}
-              <div className="relative overflow-hidden" style={{ borderRadius: '1.25rem', aspectRatio: '3/4' }}>
-                <img
-                  src="/webp/mirissa-beach.webp"
-                  alt="Mirissa Beach"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div
-                  className="absolute bottom-0 left-0 right-0 px-3 py-3"
-                  style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}
-                >
-                  <p className="text-white/70 text-[9px] font-medium uppercase tracking-wide mb-0.5">Coastal Paradise</p>
-                  <p className="text-white text-[11px] font-bold leading-tight">Mirissa Beach</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats grid below images on mobile/tablet */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-3">
-              {stats.map((stat) => (
-                <StatCounter key={stat.label} value={stat.value} label={stat.label} />
-              ))}
-            </div>
-          </motion.div>
-        </div>
+        
 
         {/* ── Desktop: 3-column grid ── */}
         <div className="hidden lg:grid grid-cols-12 gap-10 md:gap-14 items-center">
@@ -229,10 +178,10 @@ export function HomeAboutSection() {
           >
             <div className="rounded-3xl p-8 md:p-10 shadow-xl" style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)' }}>
               <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900 leading-snug" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                Experience the enchantment of Sri Lanka with Travel Lunatics&hellip;
+                We Are Passionate Storytellers of Sri Lanka&hellip;
               </h3>
               <p className="text-sm md:text-base text-gray-600 mb-6 leading-relaxed">
-                Travel Lunatics has been a leader in the Sri Lankan tourism industry for over five decades of excellence — organizing inbound tours for couples on holiday or honeymoon, individual adventurers, nature lovers, and special interest groups.
+                From ancient kingdoms and sacred temples to untamed wildlife and hidden villages, we craft journeys that go beyond sightseeing. Every experience is thoughtfully designed by local experts to give you a deeper, authentic connection with the island.
               </p>
               <ul className="space-y-3 mb-8">
                 {[
@@ -295,10 +244,10 @@ export function HomeAboutSection() {
               className="text-xl font-bold mb-3 text-gray-900 leading-snug"
               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             >
-              Experience the enchantment of Sri Lanka with Travel Lunatics&hellip;
+              We Are Passionate Storytellers of Sri Lanka&hellip;
             </h3>
             <p className="text-sm text-gray-600 mb-5 leading-relaxed">
-              Travel Lunatics has been a leader in the Sri Lankan tourism industry for over five decades of excellence — organizing inbound tours for couples, individual adventurers, nature lovers, and special interest groups.
+              From ancient kingdoms and sacred temples to untamed wildlife and hidden villages, we craft journeys that go beyond sightseeing. Every experience is thoughtfully designed by local experts to give you a deeper, authentic connection with the island.
             </p>
             <ul className="space-y-3 mb-6">
               {[
@@ -324,6 +273,65 @@ export function HomeAboutSection() {
             </Link>
           </motion.div>
         </div>
+        
+
+        <div className="lg:hidden mb-8 mt-8">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            {/* Two images side by side */}
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              {/* Sigiriya image */}
+              <div className="relative overflow-hidden" style={{ borderRadius: '1.25rem', aspectRatio: '3/4' }}>
+                <img
+                  src="/webp/sigiriya.webp"
+                  alt="Sigiriya Rock Fortress, Sri Lanka"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div
+                  className="absolute bottom-0 left-0 right-0 px-3 py-3"
+                  style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}
+                >
+                  <p className="text-white/70 text-[9px] font-medium uppercase tracking-wide mb-0.5">Cultural Heritage</p>
+                  <p className="text-white text-[11px] font-bold leading-tight">Sigiriya Rock Fortress</p>
+                </div>
+              </div>
+
+              {/* Mirissa image */}
+              <div className="relative overflow-hidden" style={{ borderRadius: '1.25rem', aspectRatio: '3/4' }}>
+                <img
+                  src="/webp/mirissa-beach.webp"
+                  alt="Mirissa Beach"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div
+                  className="absolute bottom-0 left-0 right-0 px-3 py-3"
+                  style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}
+                >
+                  <p className="text-white/70 text-[9px] font-medium uppercase tracking-wide mb-0.5">Coastal Paradise</p>
+                  <p className="text-white text-[11px] font-bold leading-tight">Mirissa Beach</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Stats grid below images on mobile/tablet */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-3">
+              {stats.map((stat) => (
+                <StatCounter key={stat.label} value={stat.value} label={stat.label} />
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+
+
+
+
 
         {/* ── Desktop stats row ── */}
         <motion.div

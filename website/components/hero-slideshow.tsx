@@ -21,7 +21,7 @@ const slides: Slide[] = [
     description: 'From Sigiriya to Ella and golden beaches, explore the island\'s most breathtaking destinations in one unforgettable journey.',
     image: '/webp/pexels-eslames1-32414014.webp',
     buttonText: 'View Packages',
-    buttonLink: '/tours',
+    buttonLink: '/discover-sri-lanka',
     gradient: 'from-black/70 via-black/40 to-transparent',
   },
   {
@@ -29,9 +29,9 @@ const slides: Slide[] = [
     title: 'Spice Trails of Sri Lanka',
     subtitle: 'Taste the Island, Bite by Bite',
     description: 'Dive into rich flavors, vibrant markets, and authentic village cooking experiences across the island.',
-    image: '/webp/BANNER.webp',
+    image: '/webp/shutterstock_1050911312.webp',
     buttonText: 'Explore Food Tours',
-    buttonLink: '/experiences',
+    buttonLink: '/food-tours',
     gradient: 'from-orange-900/70 via-red-700/40 to-transparent',
   },
   {
@@ -41,7 +41,7 @@ const slides: Slide[] = [
     description: 'Witness elephants, leopards, and whales in their natural habitats with thrilling wildlife safaris.',
     image: '/webp/shutterstock_495542851.webp',
     buttonText: 'Explore Wildlife Tours',
-    buttonLink: '/experiences',
+    buttonLink: '/wildlife-tours',
     gradient: 'from-green-900/70 via-emerald-700/40 to-transparent',
   },
   {
@@ -51,7 +51,7 @@ const slides: Slide[] = [
     description: 'Step into centuries of history with ancient cities, sacred temples, and cultural wonders.',
     image: '/webp/Dambulla Temple 01.webp',
     buttonText: 'Explore Heritage Tours',
-    buttonLink: '/tours',
+    buttonLink: '/cultural-tours',
     gradient: 'from-amber-900/70 via-yellow-700/40 to-transparent',
   },
   {
@@ -61,7 +61,7 @@ const slides: Slide[] = [
     description: 'Experience deep spirituality through sacred mountains, rituals, and timeless traditions.',
     image: '/webp/sigiriya.webp',
     buttonText: 'Explore Pilgrimage Tours',
-    buttonLink: '/tours',
+    buttonLink: '/sacred-sri-lanka',
     gradient: 'from-purple-900/70 via-indigo-700/40 to-transparent',
   },
   {
@@ -71,7 +71,7 @@ const slides: Slide[] = [
     description: 'Relax under swaying palms, swim in turquoise waters, and enjoy peaceful coastal moments.',
     image: '/webp/pexels-tomas-malik-793526-1998439.webp',
     buttonText: 'Explore Beach Tours',
-    buttonLink: '/destinations',
+    buttonLink: '/beach-tours',
     gradient: 'from-cyan-900/70 via-blue-700/40 to-transparent',
   },
   {
@@ -79,9 +79,9 @@ const slides: Slide[] = [
     title: 'Live Like a Local',
     subtitle: 'Authentic Village & Cultural Experiences',
     description: 'Connect with local communities, enjoy traditional cooking, and explore real Sri Lankan village life.',
-    image: '/webp/shutterstock_1050911312.webp',
+    image: '/webp/Galle-lighthouse2-scaled-1.webp',
     buttonText: 'Explore Local Experiences',
-    buttonLink: '/experiences',
+    buttonLink: '/local-experiences',
     gradient: 'from-stone-900/70 via-yellow-800/40 to-transparent',
   },
 ]
@@ -91,80 +91,61 @@ const TRANSITION_MS  = 1200
 const TOTAL          = slides.length
 
 export function HeroSlideshow() {
-  const [current, setCurrent]           = useState(0)
-  const [prev, setPrev]                 = useState<number | null>(null)
+  const [current, setCurrent]             = useState(0)
+  const [prev, setPrev]                   = useState<number | null>(null)
   const [transitioning, setTransitioning] = useState(false)
-  const timerRef      = useRef<NodeJS.Timeout | null>(null)
-  const transRef      = useRef<NodeJS.Timeout | null>(null)
-  const transitioningRef = useRef(false)   // always-fresh ref — avoids stale closure
 
-  // ── Core transition function ──────────────────────────────────
-  // Uses a ref for the "transitioning" guard so the interval callback
-  // never reads stale closure state.
-  const advance = useCallback((fromIndex: number) => {
+  // Single source of truth for "what index are we on" — never stale in closures
+  const currentRef      = useRef(0)
+  const transitioningRef = useRef(false)
+  const timerRef        = useRef<ReturnType<typeof setInterval> | null>(null)
+  const transRef        = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // ── Core transition: always reads from currentRef, never from stale closure ──
+  const goTo = useCallback((toIndex: number) => {
     if (transitioningRef.current) return
-    const toIndex = (fromIndex + 1) % TOTAL
+
+    const fromIndex = currentRef.current
+    if (toIndex === fromIndex) return
+
     transitioningRef.current = true
     setTransitioning(true)
     setPrev(fromIndex)
+    currentRef.current = toIndex
     setCurrent(toIndex)
+
     if (transRef.current) clearTimeout(transRef.current)
     transRef.current = setTimeout(() => {
       setPrev(null)
       setTransitioning(false)
       transitioningRef.current = false
     }, TRANSITION_MS)
-    return toIndex
   }, [])
 
-  // ── Auto-play — restarts when `current` changes ───────────────
-  useEffect(() => {
+  // ── Start (or restart) the auto-play interval ──
+  const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current)
     timerRef.current = setInterval(() => {
-      // Read current via a functional setCurrent so we always have the latest value
-      setCurrent((c) => {
-        advance(c)
-        return c  // advance() calls setCurrent internally; return c to avoid double-update
-      })
+      // Read from ref — always fresh, no stale closure issue
+      const next = (currentRef.current + 1) % TOTAL
+      goTo(next)
     }, SLIDE_DURATION)
+  }, [goTo])
+
+  // ── Mount: kick off auto-play once ──
+  useEffect(() => {
+    startTimer()
     return () => {
       if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [advance])
-
-  // ── Manual dot click ──────────────────────────────────────────
-  const goTo = useCallback((index: number) => {
-    if (transitioningRef.current) return
-    setCurrent((c) => {
-      if (index === c) return c
-      transitioningRef.current = true
-      setTransitioning(true)
-      setPrev(c)
       if (transRef.current) clearTimeout(transRef.current)
-      transRef.current = setTimeout(() => {
-        setPrev(null)
-        setTransitioning(false)
-        transitioningRef.current = false
-      }, TRANSITION_MS)
-      return index
-    })
-    // Restart auto-play timer from this point
-    if (timerRef.current) clearInterval(timerRef.current)
-    timerRef.current = setInterval(() => {
-      setCurrent((c) => {
-        advance(c)
-        return c
-      })
-    }, SLIDE_DURATION)
-  }, [advance])
-
-  // ── Cleanup on unmount ────────────────────────────────────────
-  useEffect(() => {
-    return () => {
-      if (timerRef.current)  clearInterval(timerRef.current)
-      if (transRef.current)  clearTimeout(transRef.current)
     }
-  }, [])
+  }, [startTimer])
+
+  // ── Manual dot click ──
+  const handleDotClick = useCallback((index: number) => {
+    goTo(index)
+    startTimer() // reset the auto-play countdown
+  }, [goTo, startTimer])
 
   const slideNum = (n: number) => String(n).padStart(2, '0')
 
@@ -397,7 +378,7 @@ export function HeroSlideshow() {
               <button
                 key={i}
                 className={`hero-dot ${i === current ? 'active' : ''}`}
-                onClick={() => goTo(i)}
+                onClick={() => handleDotClick(i)}
                 aria-label={`Go to slide ${i + 1}`}
               />
             ))}

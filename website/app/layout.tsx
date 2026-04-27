@@ -43,21 +43,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                  document.documentElement.classList.add('dark')
-                }
-              } catch (e) {}
-            `,
-          }}
-        />
-      </head>
+      <head />
       <body className="font-sans antialiased">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        {/*
+          defaultTheme="light"  — always starts in light mode
+          enableSystem={false}  — never auto-switch based on OS preference
+        */}
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <TranslationProvider>
             {children}
           </TranslationProvider>

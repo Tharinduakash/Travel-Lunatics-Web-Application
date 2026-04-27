@@ -11,20 +11,30 @@ import { ExperiencesSection } from '@/components/experiences-section'
 import { TourPackagesSection } from '@/components/tour-packages-section'
 import { DestinationsSection } from '@/components/destinations-section'
 import { GallerySection } from '@/components/GallerySection'
+import { MiniSlideshow } from '@/components/MiniSlideshow'
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white dark:bg-gray-950">
+    <main className="min-h-screen bg-white">
       <Navbar />
       <HeroSlideshow />
       <FloatingWidgets />
-       <HomeAboutSection />
-       <GallerySection />
-        <WhyTravelSection />
-        <FeaturedDestinations />
-        <TourPackagesSection />
-        <ExperiencesSection/>
-        <RealStoriesSection />
+      <HomeAboutSection />
+      <GallerySection />
+      <WhyTravelSection />
+
+      {/* MiniSlideshow — mobile only, always light background */}
+      <div
+        className="lg:hidden px-4 py-8"
+        style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%)' }}
+      >
+        <MiniSlideshow />
+      </div>
+
+      <FeaturedDestinations />
+      <TourPackagesSection />
+      <ExperiencesSection />
+      <RealStoriesSection />
       <Footer />
     </main>
   )

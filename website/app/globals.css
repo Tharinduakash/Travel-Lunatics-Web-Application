@@ -39,6 +39,8 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* ── Dark mode vars kept for any UI components that need them,
+   but the page itself always renders in light mode. ── */
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -120,6 +122,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    /* Always white — this site is light-mode only */
+    background-color: #ffffff;
+    color: oklch(0.145 0 0);
   }
 }

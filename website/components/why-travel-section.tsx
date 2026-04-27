@@ -247,7 +247,7 @@ export function WhyTravelSection() {
                 minWidth: 80,
               }}
             >
-              <p className="text-2xl font-black" style={{ color: '#F97316', fontFamily: "'Playfair Display', serif" }}>2+</p>
+              <p className="text-2xl font-black" style={{ color: '#F97316', fontFamily: "'Playfair Display', serif" }}>10+</p>
               <p className="text-[9px] text-gray-500 font-semibold uppercase tracking-wider">Years of Trust</p>
             </div>
           </div>
@@ -285,7 +285,7 @@ export function WhyTravelSection() {
               </span>
             </h2>
             <p className="text-gray-500 text-base leading-relaxed mb-8 sm:mb-10 max-w-md">
-              We craft seamless Sri Lankan journeys for couples, solo adventurers, families, and special interest groups — with over 50 years of island expertise behind every itinerary.
+              We craft seamless Sri Lankan journeys for couples, solo adventurers, families, and special interest groups with over 10 years of island expertise behind every itinerary.
             </p>
 
             {/* Icon list — 3 reasons */}
@@ -333,7 +333,7 @@ export function WhyTravelSection() {
               className="absolute overflow-hidden"
               style={{ top: 0, left: 0, width: 310, height: 290, borderRadius: 14, zIndex: 2, border: '4px solid white', boxShadow: '0 8px 32px rgba(0,0,0,0.13)' }}
             >
-              <Image src="/webp/group1.jpg" alt="Expert local guides" fill sizes="310px" className="object-cover" />
+              <Image src="/webp/group2.jpg" alt="Expert local guides" fill sizes="310px" className="object-cover" />
             </div>
             {/* Bottom-right image */}
             <div
@@ -421,58 +421,13 @@ export function WhyTravelSection() {
             </p>
           </motion.div>
 
-          {/* Desktop: 5 cards in a row */}
-          <div className="hidden lg:flex items-start justify-center gap-8">
+          {/* Desktop + Tablet: same SocialCard style, wrap on tablet */}
+          <div className="hidden sm:flex flex-wrap items-start justify-center gap-8">
             {socialPlatforms.map((platform, i) => (
               <SocialCard key={platform.key} platform={platform} index={i} />
             ))}
           </div>
-
-          {/* Tablet: 2x grid with full cards */}
-          <div className="hidden sm:grid lg:hidden grid-cols-2 md:grid-cols-3 gap-8 place-items-center">
-            {socialPlatforms.map((platform, i) => (
-              <motion.a
-                key={platform.key}
-                href={platform.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col items-center gap-3"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-              >
-                <div className="flex flex-col items-center gap-2">
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center text-white"
-                    style={{ backgroundColor: platform.color, boxShadow: `0 4px 16px ${platform.color}40` }}
-                  >
-                    {platform.icon}
-                  </div>
-                  <span className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-700">{platform.label}</span>
-                </div>
-                <div
-                  className="relative overflow-hidden"
-                  style={{
-                    width: 160, height: 284,
-                    borderRadius: 22,
-                    border: '2px solid rgba(0,0,0,0.07)',
-                    boxShadow: '0 8px 28px rgba(0,0,0,0.10)',
-                    background: platform.lightBg,
-                  }}
-                >
-                  <Image src={platform.screenshot} alt={`${platform.label} profile`} fill sizes="160px" className="object-cover object-top group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute bottom-0 left-0 right-0 h-14 pointer-events-none" style={{ background: `linear-gradient(to top, ${platform.lightBg} 0%, transparent 100%)` }} />
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2">
-                    <span className="px-2.5 py-1 rounded-full text-white text-[9px] font-black uppercase tracking-widest whitespace-nowrap" style={{ background: platform.color }}>
-                      Visit →
-                    </span>
-                  </div>
-                </div>
-              </motion.a>
-            ))}
-          </div>
-
+ 
           {/* Mobile: horizontal scroll */}
           <div
             className="sm:hidden flex gap-5 overflow-x-auto pb-4 px-1"
