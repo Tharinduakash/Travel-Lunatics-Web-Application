@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react'
 import { motion } from 'framer-motion'
 import { Star, Clock, ArrowUpRight, MapPin } from 'lucide-react'
 import Link from 'next/link'
@@ -37,7 +36,6 @@ export function DestinationCard({
   price_from,
   duration_days,
   rating,
-  highlights = [],
 }: DestinationCardProps) {
   const cat = CAT_COLORS[category] ?? { bg: '#FED7AA', text: '#C2410C' }
 
@@ -45,105 +43,108 @@ export function DestinationCard({
     <motion.div
       whileHover={{ y: -6 }}
       transition={{ duration: 0.25, ease: 'easeOut' }}
-      className="group relative flex-shrink-0 bg-white rounded-2xl overflow-hidden"
       style={{
-        width: '300px',
+        width: '100%',
+        background: '#FFFFFF',
+        borderRadius: 16,
+        overflow: 'hidden',
         boxShadow: '0 2px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)',
         border: '1px solid rgba(0,0,0,0.06)',
+        display: 'flex',
+        flexDirection: 'column',
       }}
+      className="group"
     >
-      {/* ── Image ── */}
-      <div className="relative overflow-hidden" style={{ height: '220px' }}>
+      {/* Image */}
+      <div style={{ position: 'relative', overflow: 'hidden', height: 230 }}>
         <img
           src={image_url}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
+          className="group-hover:scale-105"
         />
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.06) 50%, transparent 100%)',
+        }} />
 
-        {/* Gradient overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.05) 50%, transparent 100%)',
-          }}
-        />
-
-        {/* Category badge — top left */}
-        <span
-          className="absolute top-3 left-3 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full"
-          style={{ background: cat.bg, color: cat.text }}
-        >
+        {/* Category badge */}
+        <span style={{
+          position: 'absolute', top: 14, left: 14,
+          fontSize: 10, fontWeight: 800, letterSpacing: '0.12em',
+          textTransform: 'uppercase', padding: '4px 10px', borderRadius: 20,
+          background: cat.bg, color: cat.text,
+        }}>
           {category}
         </span>
 
-        {/* Rating pill — top right */}
-        <span
-          className="absolute top-3 right-3 flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full"
-          style={{ background: 'rgba(255,255,255,0.95)', color: '#1f2937' }}
-        >
-          <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-          {Number(rating).toFixed(2)}
+        {/* Rating pill */}
+        <span style={{
+          position: 'absolute', top: 14, right: 14,
+          display: 'flex', alignItems: 'center', gap: 4,
+          fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 20,
+          background: 'rgba(255,255,255,0.95)', color: '#1f2937',
+        }}>
+          <Star style={{ width: 12, height: 12, fill: '#F59E0B', color: '#F59E0B' }} />
+          {Number(rating).toFixed(1)}
         </span>
 
-        {/* Name + location — bottom of image */}
-        <div className="absolute bottom-0 left-0 right-0 px-4 pb-3">
-          <h3
-            className="text-white font-bold leading-tight mb-1"
-            style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontSize: '1.15rem',
-              textShadow: '0 1px 6px rgba(0,0,0,0.5)',
-            }}
-          >
+        {/* Name + location */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 18px 16px' }}>
+          <h3 style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: '1.18rem', fontWeight: 700,
+            color: '#fff', margin: '0 0 4px',
+            textShadow: '0 1px 8px rgba(0,0,0,0.5)',
+            lineHeight: 1.25,
+          }}>
             {name}
           </h3>
-          <span className="flex items-center gap-1 text-white/70 text-[11px] font-medium">
-            <MapPin className="w-3 h-3" />
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'rgba(255,255,255,0.72)', fontSize: 11, fontWeight: 500 }}>
+            <MapPin style={{ width: 11, height: 11 }} />
             Sri Lanka
           </span>
         </div>
       </div>
 
-      {/* ── Body ── */}
-      <div className="px-4 pt-4 pb-4 flex flex-col gap-3">
-
-        {/* Description */}
-        <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">
+      {/* Body */}
+      <div style={{ padding: '16px 18px 18px', display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
+        <p style={{
+          fontSize: 13, color: '#6B5744', lineHeight: 1.65, margin: 0,
+          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+        }}>
           {description}
         </p>
 
-        
-
-        {/* Duration + Price */}
-        <div className="flex items-center justify-between pt-1">
-          <div className="flex items-center gap-1.5 text-gray-500">
-            <Clock className="w-3.5 h-3.5" />
-            <span className="text-xs font-medium">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#9B8878' }}>
+            <Clock style={{ width: 13, height: 13 }} />
+            <span style={{ fontSize: 12, fontWeight: 500 }}>
               {duration_days} {duration_days === 1 ? 'day' : 'days'}
             </span>
           </div>
-          <div className="text-right">
-            <p className="text-[10px] text-gray-400 leading-none">From</p>
-            <p className="text-base font-black leading-tight" style={{ color: '#F97316' }}>
-              ${price_from.toLocaleString()}.00
+          <div style={{ textAlign: 'right' }}>
+            <p style={{ fontSize: 10, color: '#B8A090', margin: '0 0 1px', letterSpacing: '0.04em' }}>From</p>
+            <p style={{ fontSize: 17, fontWeight: 800, color: '#F97316', margin: 0, lineHeight: 1 }}>
+              ${price_from.toLocaleString()}
             </p>
           </div>
         </div>
 
-        {/* CTA Button */}
-        <Link href={`/destinations/${id}`} className="block">
+        <Link href={`/destinations/${id}`} style={{ display: 'block', textDecoration: 'none', marginTop: 'auto' }}>
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-black uppercase tracking-widest text-white transition-all duration-300"
             style={{
+              width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              padding: '12px 0', borderRadius: 10, border: 'none', cursor: 'pointer',
+              fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#fff',
               background: 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)',
-              boxShadow: '0 4px 14px rgba(249,115,22,0.35)',
+              boxShadow: '0 4px 14px rgba(249,115,22,0.32)',
             }}
           >
             Explore Now
-            <ArrowUpRight className="w-4 h-4" />
+            <ArrowUpRight style={{ width: 15, height: 15 }} />
           </motion.button>
         </Link>
       </div>

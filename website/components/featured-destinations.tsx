@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { DestinationCard } from './destination-card'
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react'
@@ -221,6 +221,7 @@ export function FeaturedDestinations() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4, delay: i * 0.07 }}
+                    style={{ flexShrink: 0, width: 300 }}
                   >
                     <DestinationCard {...dest} />
                   </motion.div>

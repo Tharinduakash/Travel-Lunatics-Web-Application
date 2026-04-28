@@ -21,14 +21,13 @@ const dropdownData: Record<string, { label: string; href: string }[]> = {
     { label: 'Hill Country',      href: '/destinations/hill-country' },
   ],
   tours: [
-    { label: 'All Tours',           href: '/tours' },
-    { label: 'Day Tours',           href: '/tours/day-tours' },
-    { label: 'Multi-Day Tours',     href: '/tours/multi-day' },
-    { label: 'Luxury Tours',        href: '/tours/luxury' },
-    { label: 'Budget Tours',        href: '/tours/budget' },
-    { label: 'Private Tours',       href: '/tours/private' },
-    { label: 'Group Tours',         href: '/tours/group' },
-    { label: 'Honeymoon Packages',  href: '/tours/honeymoon' },
+    { label: 'All Tours',          href: '/tours' },
+    { label: 'Discover Sri Lanka', href: '/discover-sri-lanka' },
+    { label: 'Wildlife Tours',     href: '/wildlife-tours' },
+    { label: 'Beach Tours',        href: '/beach-tours' },
+    { label: 'Cultural Tours',     href: '/cultural-tours' },
+    { label: 'Food Tours',         href: '/food-tours' },
+    { label: 'Sacred Sri Lanka',   href: '/sacred-sri-lanka' },
   ],
   experiences: [
     { label: 'Wildlife Safaris',      href: '/experiences/wildlife' },
@@ -309,14 +308,26 @@ export function Navbar() {
           width:38px; height:38px; border-radius:2px;
           border:1px solid rgba(255,255,255,0.35); background:rgba(0,0,0,0.18);
           color:rgba(255,255,255,0.9); cursor:pointer; transition:all 0.25s ease; flex-shrink:0;
+          position:relative; z-index:1001;
         }
         .burger-btn:hover { background:rgba(198,162,92,0.12); border-color:rgba(198,162,92,0.5); color:#c6a25c; }
+
+        /* Close button — right side of topbar row */
+        .mega-close {
+          flex-shrink: 0;
+          width: 40px; height: 40px; border-radius: 50%;
+          border: 1.5px solid rgba(0,0,0,0.15); background: #f5f5f5;
+          color: #1a1a1a; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          transition: all 0.25s ease;
+        }
+        .mega-close:hover { background:rgba(198,162,92,0.15); border-color:#c6a25c; color:#c6a25c; }
 
         /* ═══════════════════════════════════════════════════
            MEGA MENU — flex-column so topbar never overlaps
         ═══════════════════════════════════════════════════ */
         .mega-overlay {
-          position: fixed; inset: 0; z-index: 900;
+          position: fixed; inset: 0; z-index: 1100;
           /* flex column: topbar is fixed height, body scrolls */
           display: flex; flex-direction: column; overflow: hidden;
           background: rgba(255,255,255,0.99);
@@ -342,24 +353,16 @@ export function Navbar() {
 
         /* Logo inside overlay */
         .mega-logo {
+          display:flex; flex-direction:column; align-items:flex-start;
+          text-decoration:none; flex-shrink:0;
+        }
+        .mega-logo-text {
           font-family:'Playfair Display',serif; font-style:italic; font-weight:700;
-          font-size:20px; color:#1a1a1a; letter-spacing:0.01em;
-          text-decoration:none; white-space:nowrap; flex-shrink:0; line-height:1;
+          font-size:22px; color:#1a1a1a; letter-spacing:0.01em; line-height:1;
         }
-        @media (min-width:768px) { .mega-logo { font-size:22px; } }
-        .mega-logo span { color:#c6a25c; }
-
-        /* Close button — right side of topbar row */
-        .mega-close {
-          /* In the flex row — can never overlap logo */
-          flex-shrink: 0;
-          width: 40px; height: 40px; border-radius: 50%;
-          border: 1px solid rgba(0,0,0,0.12); background: transparent;
-          color: #1a1a1a; cursor: pointer;
-          display: flex; align-items: center; justify-content: center;
-          transition: all 0.25s ease;
-        }
-        .mega-close:hover { background:rgba(198,162,92,0.1); border-color:#c6a25c; color:#c6a25c; }
+        @media (min-width:768px) { .mega-logo-text { font-size:25px; } }
+        .mega-logo-text span { color:#c6a25c; }
+        .mega-logo-sub { font-size:8px; font-weight:400; letter-spacing:0.22em; color:rgba(198,162,92,0.65); text-transform:uppercase; margin-top:4px; }
 
         /* Scrollable content */
         .mega-body { flex: 1; overflow-y: auto; }
@@ -391,7 +394,7 @@ export function Navbar() {
 
         /* ── Search overlay ── */
         .search-overlay {
-          position:fixed; inset:0; z-index:950;
+          position:fixed; inset:0; z-index:1200;
           background:rgba(255,255,255,0.97);
           display:flex; flex-direction:column; align-items:center; justify-content:center;
           opacity:0; visibility:hidden;
@@ -449,7 +452,8 @@ export function Navbar() {
         {/* ── Top bar: logo ← · → X ── */}
         <div className="mega-topbar">
           <Link href="/" className="mega-logo" onClick={() => setMegaOpen(false)}>
-            Travel <span>Lunatics</span>
+            <span className="mega-logo-text">Travel <span>Lunatics</span></span>
+            <span className="mega-logo-sub">www.travellunatics.com</span>
           </Link>
           <button
             className="mega-close"
