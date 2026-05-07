@@ -46,9 +46,18 @@ export function Footer() {
   const [submitted, setSubmitted] = useState(false)
   const year = new Date().getFullYear()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (email.trim()) { setSubmitted(true); setEmail('') }
+    if (!email.trim()) return
+    try {
+      await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+    } catch {}
+    setSubmitted(true)
+    setEmail('')
   }
 
   return (

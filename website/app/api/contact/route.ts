@@ -1,29 +1,23 @@
-export async function POST(request: Request) {
+import { NextRequest, NextResponse } from 'next/server'
+import sql from '@/lib/db'
+
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { name, email, phone, subject, message } = body
 
-    // Validate input
     if (!name || !email || !subject || !message) {
-      return Response.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Here you can add email sending logic or database storage
-    // For now, we'll just log it and return success
-    console.log('Contact form submission:', { name, email, phone, subject, message })
+    await sql`
+      INSERT INTO inquiries (name, email, phone, subject, message, status)
+      VALUES (${name}, ${email}, ${phone || null}, ${subject}, ${message}, 'unread')
+    `
 
-    return Response.json(
-      { success: true, message: 'Thank you for contacting us!' },
-      { status: 200 }
-    )
+    return NextResponse.json({ success: true, message: 'Thank you for contacting us!' })
   } catch (error) {
     console.error('Contact form error:', error)
-    return Response.json(
-      { error: 'Failed to process contact form' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to process contact form' }, { status: 500 })
   }
 }

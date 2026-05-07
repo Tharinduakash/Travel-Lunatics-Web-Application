@@ -5,16 +5,55 @@ import { HelpCircle } from 'lucide-react'
 
 export function FloatingWidgets() {
   const [showInquireModal, setShowInquireModal] = useState(false)
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [subject, setSubject] = useState('')
+  const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
 
   const handleWhatsAppClick = () => {
     const phoneNumber = '+94743582799'
-    const message = 'Hi! I would like to inquire about your travel packages.'
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
+    const msg = 'Hi! I would like to inquire about your travel packages.'
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(msg)}`
     window.open(whatsappUrl, '_blank')
   }
 
   const handleInquireClick = () => {
     setShowInquireModal(!showInquireModal)
+    if (showInquireModal) {
+      setSubmitted(false)
+      setError('')
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, subject, message }),
+      })
+      if (res.ok) {
+        setSubmitted(true)
+        setName('')
+        setEmail('')
+        setSubject('')
+        setMessage('')
+        setTimeout(() => { setShowInquireModal(false); setSubmitted(false) }, 3000)
+      } else {
+        const data = await res.json()
+        setError(data.error || 'Failed to send inquiry. Please try again.')
+      }
+    } catch {
+      setError('Failed to send inquiry. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -266,13 +305,29 @@ export function FloatingWidgets() {
           <h2>Send Your Inquiry</h2>
           <p>We&apos;d love to hear from you! Fill out the form below and we&apos;ll get back to you shortly.</p>
 
-          <form className="inquire-form" onSubmit={(e) => e.preventDefault()}>
-            <input type="text"  placeholder="Your Name"    required aria-label="Name" />
-            <input type="email" placeholder="Your Email"   required aria-label="Email" />
-            <input type="text"  placeholder="Subject"      required aria-label="Subject" />
-            <textarea placeholder="Tell us about your travel plans..." required aria-label="Message" />
-            <button type="submit" className="inquire-btn-submit">Send Inquiry</button>
-          </form>
+          {submitted ? (
+            <div style={{ textAlign: 'center', padding: '24px 0' }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', marginBottom: 8 }}>Inquiry Sent!</h3>
+              <p style={{ color: '#666', fontSize: 14 }}>Thank you! We&apos;ll get back to you shortly.</p>
+            </div>
+          ) : (
+            <form className="inquire-form" onSubmit={handleSubmit}>
+              <input type="text" placeholder="Your Name" required aria-label="Name"
+                value={name} onChange={e => setName(e.target.value)} />
+              <input type="email" placeholder="Your Email" required aria-label="Email"
+                value={email} onChange={e => setEmail(e.target.value)} />
+              <input type="text" placeholder="Subject" required aria-label="Subject"
+                value={subject} onChange={e => setSubject(e.target.value)} />
+              <textarea placeholder="Tell us about your travel plans..." required aria-label="Message"
+                value={message} onChange={e => setMessage(e.target.value)} />
+              {error && <p style={{ color: '#e53e3e', fontSize: 13, margin: 0 }}>{error}</p>}
+              <button type="submit" className="inquire-btn-submit" disabled={loading}
+                style={{ opacity: loading ? 0.7 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}>
+                {loading ? 'Sending...' : 'Send Inquiry'}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </>
